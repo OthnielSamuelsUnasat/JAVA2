@@ -1,7 +1,9 @@
+import backend.api_requests;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-
+//import backend.api_requests.*;
 
 public class StudentManagementGUI {
     public static void main(String[] args) {
@@ -92,5 +94,24 @@ public class StudentManagementGUI {
 
 
         frame.setVisible(true);
+
+        fetchStudentData("", table);
+
+    }
+    private static void fetchStudentData(String query, JTable table) {
+        // Call the api_requests.getStudents() method to fetch the data
+        java.util.List<backend.Student> students = api_requests.getStudents(query);
+
+        if (students != null) {
+            // Populate the table with the fetched data
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0); // Clear existing rows
+
+            for (backend.Student student : students) {
+                model.addRow(new Object[]{student.getId(), student.getName()});
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Error fetching student data");
+        }
     }
 }
