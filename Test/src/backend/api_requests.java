@@ -1,5 +1,6 @@
 package backend;
 
+import backend.models.Student;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class api_requests{
 
-    public static List<backend.Student> students = new ArrayList<>();
+    public static List<Student> students = new ArrayList<>();
     private static String apiUrl = "https://trajectplannerapi.dulamari.com/";
 
     public static List<Student> getStudents(String query) {
@@ -94,7 +95,7 @@ public class api_requests{
             students.add(newStudent);
 
             // Append the new student to the CSV file
-            String newStudentData = "\n" + newStudent.getCsv();
+            String newStudentData = "\n" + newStudent;
 //            Files.write(Paths.get(CSV_FILE_PATH), newStudentData.getBytes(), StandardOpenOption.APPEND);
 
             exchange.sendResponseHeaders(201, -1); // Created
@@ -109,7 +110,7 @@ public class api_requests{
 
             for (Student student : students) {
                 if (student.getId() == updatedStudent.getId()) {
-                    student.setName(updatedStudent.getName());
+                    student.setFirstName(updatedStudent.getFirstName());
                     break;
                 }
             }

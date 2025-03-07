@@ -1,4 +1,5 @@
 import backend.api_requests;
+import backend.models.Student;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -81,7 +82,7 @@ public class StudentManagementGUI {
 
 
         JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Studentnummer", "Naam", "Vak", "Cijfers"}));
+        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Studentnummer", "Naam", "Last Name", "Student Number","Gender","Birthdate"}));
         JScrollPane scrollPane = new JScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -100,15 +101,15 @@ public class StudentManagementGUI {
     }
     private static void fetchStudentData(String query, JTable table) {
         // Call the api_requests.getStudents() method to fetch the data
-        java.util.List<backend.Student> students = api_requests.getStudents(query);
+        java.util.List<Student> students = api_requests.getStudents(query);
 
         if (students != null) {
             // Populate the table with the fetched data
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.setRowCount(0); // Clear existing rows
 
-            for (backend.Student student : students) {
-                model.addRow(new Object[]{student.getId(), student.getName()});
+            for (Student student : students) {
+                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate()});
             }
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");
