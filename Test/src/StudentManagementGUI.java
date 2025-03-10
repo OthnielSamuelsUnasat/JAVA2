@@ -100,11 +100,9 @@ public class StudentManagementGUI {
 
     }
     private static void fetchStudentData(String query, JTable table) {
-        // Call the api_requests.getStudents() method to fetch the data
         java.util.List<Student> students = api_requests.getStudents(query);
 
         if (students != null) {
-            // Populate the table with the fetched data
             DefaultTableModel model = (DefaultTableModel) table.getModel();
             model.setRowCount(0); // Clear existing rows
 
