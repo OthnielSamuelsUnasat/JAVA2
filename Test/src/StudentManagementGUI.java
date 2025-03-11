@@ -37,7 +37,7 @@ public class StudentManagementGUI {
         groepsleden.setWrapStyleWord(true);
         JScrollPane groepPane = new JScrollPane(groepsleden);
 
-        groepsleden.setText("SE/1123/... - Othniel\nSE1123/... - elle\nSE/1123/... - bindya\nSE/1123/... - Drishti\nSE/1123/056 - Dharandjai Patan");
+        groepsleden.setText("SE/1123/080... - Othniel\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan");
 
 
         JFrame frame_student_toevoegen = new JFrame("Student Toevoegen");
@@ -93,7 +93,7 @@ public class StudentManagementGUI {
 
 
         JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Studentnummer", "Naam", "Last Name", "Student Number","Gender","Birthdate"}));
+        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer","Geslacht","Geboortedatum", "Richting", "Cohort"}));
         JScrollPane scrollPane = new JScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
 

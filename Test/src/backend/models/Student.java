@@ -7,6 +7,8 @@ public class Student {
     private String student_number;
     private String gender;
     private String birthdate;
+    private String major;
+    private int cohort;
 
     // Getters and Setters for each field
 
@@ -58,9 +60,30 @@ public class Student {
         this.birthdate = birthdate;
     }
 
+    public String getMajor() {return major;}
+
+    public void setMajor(String major) {
+        if (major.equals("SE") || major.equals("BI") || major.equals("NE")) {
+            this.major = major;
+        } else {
+            throw new IllegalArgumentException("Richting moet SE, BI, of NE zijn");
+        }
+    }
+
+    public int getCohort() {return cohort;}
+
+    public void setCohort(int cohort) {
+        if (cohort >= 1101 && cohort <= 1199) {
+            this.cohort = cohort;
+        } else {
+            throw new IllegalArgumentException("Cohort meot tussen 1101 en 1199 zijn");
+        }
+    }
+
+
     // Override toString() for easier debugging and printing
     @Override
     public String toString() {
-        return "Student{id=" + id + ", firstName='" + first_name + "', lastName='" + last_name + "', studentNumber='" + student_number + "', gender='" + gender + "', birthdate='" + birthdate + "'}";
+        return "Student{id=" + id + ", firstName='" + first_name + "', lastName='" + last_name + "', studentNumber='" + student_number + "', gender='" + gender + "', birthdate='" + birthdate + "', major='" + major + "', cohort=" + cohort + "}";
     }
 }
