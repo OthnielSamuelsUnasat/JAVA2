@@ -8,7 +8,7 @@ import static backend.api_requests.student_toevoegen;
 public class StudentToevoegenGUI {
     public static void openStudentForm() {
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
-        dialog.setSize(400, 600);
+        dialog.setSize(400, 700);
         dialog.setLayout(new GridBagLayout());
         dialog.getContentPane().setBackground(Color.WHITE);
 
@@ -24,6 +24,15 @@ public class StudentToevoegenGUI {
 
         JLabel lastNameLabel = new JLabel("Achternaam:");
         JTextField lastNameField = new JTextField(20);
+
+        JLabel MajorLabel = new JLabel("Richting:");
+        JTextField MajorField = new JTextField(20);
+
+        JLabel CohortLabel = new JLabel("Cohort:");
+        JTextField Cohort = new JTextField(20);
+
+        JLabel WachtwoordLabel = new JLabel("Wachtwoord:");
+        JTextField Wachtwoord = new JTextField(20);
 
         JLabel genderLabel = new JLabel("Geslacht:");
         String[] genders = {"M", "F"};
@@ -45,6 +54,13 @@ public class StudentToevoegenGUI {
             Student student = new Student();
             student.setFirstName(firstNameField.getText());
             student.setLastName(lastNameField.getText());
+            student.setMajor(MajorField.getText());
+            student.setPassword(Wachtwoord.getText());
+
+
+            int cohortValue = Integer.parseInt(Cohort.getText());
+            student.setCohort(cohortValue);
+
             student.setGender((String) genderBox.getSelectedItem());
             student.setBirthdate(birthDateField.getText());
 
@@ -64,6 +80,18 @@ public class StudentToevoegenGUI {
         dialog.add(lastNameLabel, gbc);
         gbc.gridy++;
         dialog.add(lastNameField, gbc);
+        gbc.gridy++;
+        dialog.add(MajorLabel, gbc);
+        gbc.gridy++;
+        dialog.add(MajorField, gbc);
+        gbc.gridy++;
+        dialog.add(CohortLabel, gbc);
+        gbc.gridy++;
+        dialog.add(Cohort, gbc);
+        gbc.gridy++;
+        dialog.add(WachtwoordLabel, gbc);
+        gbc.gridy++;
+        dialog.add(Wachtwoord, gbc);
         gbc.gridy++;
         dialog.add(genderLabel, gbc);
         gbc.gridy++;

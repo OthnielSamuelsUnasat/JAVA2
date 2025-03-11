@@ -9,6 +9,7 @@ public class Student {
     private String birthdate;
     private String major;
     private int cohort;
+    private String password;
 
     // Getters and Setters for each field
 
@@ -34,6 +35,17 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.last_name = lastName;
+    }
+    
+    public void setPassword(String password) {
+        if (password == null || password.length() < 4) {
+            throw new IllegalArgumentException("Password must be at least 4 characters long.");
+        }
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public String getStudentNumber() {

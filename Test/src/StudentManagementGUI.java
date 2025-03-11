@@ -19,6 +19,7 @@ public class StudentManagementGUI {
         Color accentColor = new Color(255, 165, 0);
         Color lightColor = new Color(245, 245, 245);
 
+        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer","Geslacht","Geboortedatum"}));
 
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(250, 0));
@@ -46,10 +47,18 @@ public class StudentManagementGUI {
         frame_student_toevoegen.setLayout(new BorderLayout());
 
         JButton btn_student_toevoegen = new JButton("+ Voeg Student Toe");
-        btn_student_toevoegen.addActionListener(e -> StudentToevoegenGUI.openStudentForm()); // Call the popup method
+        btn_student_toevoegen.addActionListener(e -> {
+            StudentToevoegenGUI.openStudentForm();
+
+            // Ensure the table refreshes after the dialog closes
+            SwingUtilities.invokeLater(() -> fetchStudentData("", table));
+        });
+
+
 
         frame.add(btn_student_toevoegen);
         frame.setVisible(true);
+
 
 
         JButton cijfer = new JButton("+ Voeg Cijfer Toe");
@@ -93,16 +102,13 @@ public class StudentManagementGUI {
 
 
         JPanel tablePanel = new JPanel(new BorderLayout());
-        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer","Geslacht","Geboortedatum", "Richting", "Cohort"}));
         JScrollPane scrollPane = new JScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
-
 
 
         frame.add(sidebar, BorderLayout.WEST);
         frame.add(searchPanel, BorderLayout.NORTH);
         frame.add(tablePanel, BorderLayout.CENTER);
-
 
 
         frame.setVisible(true);
