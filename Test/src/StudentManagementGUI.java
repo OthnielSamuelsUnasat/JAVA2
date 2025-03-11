@@ -40,13 +40,24 @@ public class StudentManagementGUI {
         groepsleden.setText("SE/1123/... - Othniel\nSE1123/... - elle\nSE/1123/... - bindya\nSE/1123/... - Drishti\nSE/1123/056 - Dharandjai Patan");
 
 
-        JButton studenten = new JButton("+ Voeg Student Toe");
+        JFrame frame_student_toevoegen = new JFrame("Student Toevoegen");
+        frame_student_toevoegen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_student_toevoegen.setSize(1200, 1200);
+        frame_student_toevoegen.setLayout(new BorderLayout());
+
+        JButton btn_student_toevoegen = new JButton("+ Voeg Student Toe");
+        btn_student_toevoegen.addActionListener(e -> StudentToevoegenGUI.openStudentForm()); // Call the popup method
+
+        frame.add(btn_student_toevoegen);
+        frame.setVisible(true);
+
+
         JButton cijfer = new JButton("+ Voeg Cijfer Toe");
         JButton gemiddelde = new JButton("+ Bereken Gemiddelde");
         JButton verwijderstudent = new JButton("- Verwijder Student");
 
 
-        JButton[] buttons = {studenten, cijfer, gemiddelde, verwijderstudent};
+        JButton[] buttons = {btn_student_toevoegen, cijfer, gemiddelde, verwijderstudent};
         for (JButton button : buttons) {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
@@ -60,7 +71,7 @@ public class StudentManagementGUI {
         sidebar.add(groep);
         sidebar.add(groepPane);
         sidebar.add(Box.createVerticalStrut(50));
-        sidebar.add(studenten);
+        sidebar.add(btn_student_toevoegen);
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(cijfer);
         sidebar.add(Box.createVerticalStrut(50));
