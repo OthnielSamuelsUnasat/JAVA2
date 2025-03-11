@@ -2,6 +2,7 @@ package backend;
 
 import backend.models.Student;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -32,10 +33,6 @@ public class api_requests{
             // Send the request and get the response
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Print the raw JSON response in the console
-            System.out.println("Response Body (Raw JSON):");
-            System.out.println(response.body());
-
             // Parse the JSON response into a list of students
             Gson gson = new Gson();
             Student[] students = gson.fromJson(response.body(), Student[].class);
@@ -50,6 +47,42 @@ public class api_requests{
             return null;
         }
     }
+
+    public static String student_toevoegen(Student student) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(student);
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "students"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            if (response.statusCode() == 201 || response.statusCode() == 200) {
+                // Parse the JSON response into a Student object
+                return response.body();
+            } else {
+                return ("Fout bij opslaan: " + response.statusCode() +  response.body());
+            }
+        } catch (JsonSyntaxException e) {
+            return("Fout bij JSON-parsing: " + e.getMessage());
+
+        } catch (Exception e) {
+            return("Fout bij API-aanroep: " + e.getMessage());
+        }
+    }
+
+
 
 
 
@@ -94,9 +127,7 @@ public class api_requests{
 
             students.add(newStudent);
 
-            // Append the new student to the CSV file
             String newStudentData = "\n" + newStudent;
-//            Files.write(Paths.get(CSV_FILE_PATH), newStudentData.getBytes(), StandardOpenOption.APPEND);
 
             exchange.sendResponseHeaders(201, -1); // Created
         }
@@ -114,7 +145,6 @@ public class api_requests{
                     break;
                 }
             }
-
             exchange.sendResponseHeaders(200, -1); // OK
         }
 

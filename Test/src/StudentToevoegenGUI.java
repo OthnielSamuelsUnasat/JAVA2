@@ -1,5 +1,9 @@
+import backend.models.Student;
+
 import javax.swing.*;
 import java.awt.*;
+
+import static backend.api_requests.student_toevoegen;
 
 public class StudentToevoegenGUI {
     public static void openStudentForm() {
@@ -17,15 +21,18 @@ public class StudentToevoegenGUI {
 
         JLabel firstNameLabel = new JLabel("Voornaam:");
         JTextField firstNameField = new JTextField(20);
+
         JLabel lastNameLabel = new JLabel("Achternaam:");
         JTextField lastNameField = new JTextField(20);
-        JLabel studentNumberLabel = new JLabel("Studentennummer:");
-        JTextField studentNumberField = new JTextField(20);
+
         JLabel genderLabel = new JLabel("Geslacht:");
-        String[] genders = {"Man", "Vrouw"};
+        String[] genders = {"M", "F"};
         JComboBox<String> genderBox = new JComboBox<>(genders);
-        JLabel birthDateLabel = new JLabel("Geboortedatum:");
+
+        JLabel birthDateLabel = new JLabel("Geboortedatum(YYYY-MM-DD):");
         JTextField birthDateField = new JTextField(20);
+
+
         JButton saveButton = new JButton("Opslaan");
 
         Color accentColor = new Color(255, 165, 0);
@@ -35,14 +42,19 @@ public class StudentToevoegenGUI {
         saveButton.setForeground(Color.BLACK);
 
         saveButton.addActionListener(e -> {
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String studentNumber = studentNumberField.getText();
-            String gender = (String) genderBox.getSelectedItem();
-            String birthDate = birthDateField.getText();
-            JOptionPane.showMessageDialog(dialog, "Student opgeslagen: " + firstName + " " + lastName + " (ID: " + studentNumber + ")\nGeslacht: " + gender + "\nGeboortedatum: " + birthDate);
+            Student student = new Student();
+            student.setFirstName(firstNameField.getText());
+            student.setLastName(lastNameField.getText());
+            student.setGender((String) genderBox.getSelectedItem());
+            student.setBirthdate(birthDateField.getText());
+
+           String response = student_toevoegen(student);
+
+            JOptionPane.showMessageDialog(dialog, response);
+
             dialog.dispose();
         });
+
 
         gbc.gridy++;
         dialog.add(firstNameLabel, gbc);
@@ -52,10 +64,6 @@ public class StudentToevoegenGUI {
         dialog.add(lastNameLabel, gbc);
         gbc.gridy++;
         dialog.add(lastNameField, gbc);
-        gbc.gridy++;
-        dialog.add(studentNumberLabel, gbc);
-        gbc.gridy++;
-        dialog.add(studentNumberField, gbc);
         gbc.gridy++;
         dialog.add(genderLabel, gbc);
         gbc.gridy++;
