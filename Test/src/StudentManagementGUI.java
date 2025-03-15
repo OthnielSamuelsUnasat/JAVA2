@@ -1,4 +1,7 @@
 import backend.api_requests;
+import backend.custompackages.ButtonRenderer;
+import backend.custompackages.ButtonEditor;
+
 import backend.models.Student;
 
 import javax.swing.*;
@@ -19,12 +22,23 @@ public class StudentManagementGUI {
         Color accentColor = new Color(255, 165, 0);
         Color lightColor = new Color(245, 245, 245);
 
-        JTable table = new JTable(new DefaultTableModel(new Object[][]{}, new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer","Geslacht","Geboortedatum"}));
+        DefaultTableModel model = new DefaultTableModel(new Object[][]{},
+                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum", "Bewerken", "Verwijderen"});
 
+        JTable table = new JTable(model);
+        table.setRowHeight(30);
+
+        
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(250, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(primaryColor);
+
+        table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", Color.BLUE));
+        table.getColumn("Bewerken").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
+
+        table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", Color.RED));
+        table.getColumn("Verwijderen").setCellEditor(new ButtonEditor(new JCheckBox(), model, false));
 
 
         JLabel groep = new JLabel("Groepsleden");
@@ -124,7 +138,7 @@ public class StudentManagementGUI {
             model.setRowCount(0); // Clear existing rows
 
             for (Student student : students) {
-                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate()});
+                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),"Bewerken", "Verwijderen"});
             }
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");

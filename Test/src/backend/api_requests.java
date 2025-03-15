@@ -9,10 +9,12 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +83,98 @@ public class api_requests{
             return("Fout bij API-aanroep: " + e.getMessage());
         }
     }
+
+
+    public static String student_bewerken(Student student) {
+        try {
+//            String studentNumber = student.getStudentNumber();
+//
+//            String[] parts = studentNumber.split("/");
+//            if (parts.length == 3) {
+//                // Pad the last part with leading zeros if necessary
+//                String lastPart = parts[2];
+//                if (lastPart.length() < 3) {
+//                    lastPart = String.format("%03d", Integer.parseInt(lastPart)); // Pad to 3 digits
+//                    studentNumber = parts[0] + "/" + parts[1] + "/" + lastPart;
+//                    student.setStudentNumber(studentNumber);
+//                }
+//            }
+
+
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(student);
+
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "students")) // Append student ID to URL
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            if (response.statusCode() == 200 || response.statusCode() == 204) {
+                return "Student succesvol bijgewerkt.";
+            } else {
+                return "Fout bij bijwerken: " + response.statusCode() + " " + response.body();
+            }
+        } catch (JsonSyntaxException e) {
+            return "Fout bij JSON-parsing: " + e.getMessage();
+        } catch (Exception e) {
+            return "Fout bij API-aanroep: " + e.getMessage();
+        }
+    }
+
+
+    public static String student_verwijderen(Student student) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+
+            // Convert the student object to JSON string using Gson
+            String jsonInputString = gson.toJson(student);
+            System.out.println("JSON Body: " + jsonInputString); // Debugging: Check JSON output
+
+            // Construct the URI for the "DELETE" action (verify with your API endpoint)
+            URI uri = URI.create(apiUrl + "students");
+
+            // Manually send the request using HttpURLConnection since Java HttpRequest API does not support bodies in DELETE directly
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setDoOutput(true); // Enable sending body
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8)); // Send the JSON body
+
+            // Get the response code and handle it
+            int responseCode = connection.getResponseCode();
+            String responseMessage = connection.getResponseMessage();
+
+            System.out.println("Response Code: " + responseCode);
+            System.out.println("Response Body: " + responseMessage);
+
+            if (responseCode == 200 || responseCode == 204) {
+                return "Student succesvol verwijderd.";
+            } else {
+                return "Fout bij verwijderen: " + responseCode + " " + responseMessage;
+            }
+        } catch (Exception e) {
+            return "Fout bij API-aanroep: " + e.getMessage();
+        }
+    }
+
+
+
+
+
+    // Helper class for request body
+
 
 
 
@@ -161,4 +255,20 @@ public class api_requests{
 
 
 }
+}
+class StudentDeleteRequest {
+    private int student_id;
+
+    // Constructor, Getter, and Setter
+    public StudentDeleteRequest(int student_id) {
+        this.student_id = student_id;
+    }
+
+    public int getStudent_id() {
+        return student_id;
+    }
+
+    public void setStudent_id(int student_id) {
+        this.student_id = student_id;
+    }
 }

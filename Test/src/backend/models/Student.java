@@ -1,7 +1,7 @@
 package backend.models;
 
 public class Student {
-    private int id;
+    private int id; // Identifies the student, both for internal and API purposes
     private String first_name;
     private String last_name;
     private String student_number;
@@ -10,9 +10,18 @@ public class Student {
     private String major;
     private int cohort;
     private String password;
+    public Student() {}
 
-    // Getters and Setters for each field
-
+    // Constructor for easy object creation
+    public Student(int id, String firstName, String lastName, String studentNumber, String gender, String birthdate) {
+        this.id = id;
+        this.first_name = firstName;
+        this.last_name = lastName;
+        this.student_number = studentNumber;
+        this.gender = gender;
+        this.setBirthdate(birthdate);
+    }
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -35,17 +44,6 @@ public class Student {
 
     public void setLastName(String lastName) {
         this.last_name = lastName;
-    }
-    
-    public void setPassword(String password) {
-        if (password == null || password.length() < 4) {
-            throw new IllegalArgumentException("Password must be at least 4 characters long.");
-        }
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return this.password;
     }
 
     public String getStudentNumber() {
@@ -72,26 +70,29 @@ public class Student {
         this.birthdate = birthdate;
     }
 
-    public String getMajor() {return major;}
+    public String getMajor() {
+        return major;
+    }
 
     public void setMajor(String major) {
-        if (major.equals("SE") || major.equals("BI") || major.equals("NE")) {
-            this.major = major;
-        } else {
-            throw new IllegalArgumentException("Richting moet SE, BI, of NE zijn");
-        }
+        this.major = major;
     }
 
-    public int getCohort() {return cohort;}
+    public int getCohort() {
+        return cohort;
+    }
 
     public void setCohort(int cohort) {
-        if (cohort >= 1101 && cohort <= 1199) {
-            this.cohort = cohort;
-        } else {
-            throw new IllegalArgumentException("Cohort meot tussen 1101 en 1199 zijn");
-        }
+        this.cohort = cohort;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     // Override toString() for easier debugging and printing
     @Override
