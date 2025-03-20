@@ -8,9 +8,9 @@ import static backend.api_requests.student_toevoegen;
 public class StudentToevoegenGUI {
     public static void openStudentForm() {
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
-        dialog.setSize(400, 700);
+        dialog.setSize(400, 750);
         dialog.setLayout(new GridBagLayout());
-        dialog.getContentPane().setBackground(Color.WHITE);
+       // dialog.getContentPane().setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -26,7 +26,9 @@ public class StudentToevoegenGUI {
         JTextField lastNameField = new JTextField(20);
 
         JLabel MajorLabel = new JLabel("Richting:");
-        JTextField MajorField = new JTextField(20);
+        String[] richtingen = {"SE", "SNE", "BI"};
+        JComboBox<String> richtingenBox = new JComboBox<>(richtingen);
+        //JTextField MajorField = new JTextField(20);
 
         JLabel CohortLabel = new JLabel("Cohort:");
         JTextField Cohort = new JTextField(20);
@@ -44,7 +46,7 @@ public class StudentToevoegenGUI {
 
         JButton saveButton = new JButton("Opslaan");
 
-        Color accentColor = new Color(255, 165, 0);
+        Color accentColor = new Color(210, 86, 0);
         saveButton.setBackground(accentColor);
         saveButton.setOpaque(true);
         saveButton.setBorderPainted(false);
@@ -54,7 +56,6 @@ public class StudentToevoegenGUI {
             Student student = new Student();
             student.setFirstName(firstNameField.getText());
             student.setLastName(lastNameField.getText());
-            student.setMajor(MajorField.getText());
             student.setPassword(Wachtwoord.getText());
 
 
@@ -62,6 +63,7 @@ public class StudentToevoegenGUI {
             student.setCohort(cohortValue);
 
             student.setGender((String) genderBox.getSelectedItem());
+            student.setMajor((String) richtingenBox.getSelectedItem());
             student.setBirthdate(birthDateField.getText());
 
            String response = student_toevoegen(student);
@@ -83,7 +85,9 @@ public class StudentToevoegenGUI {
         gbc.gridy++;
         dialog.add(MajorLabel, gbc);
         gbc.gridy++;
-        dialog.add(MajorField, gbc);
+        dialog.add(MajorLabel, gbc);
+        gbc.gridy++;
+        dialog.add(richtingenBox, gbc);
         gbc.gridy++;
         dialog.add(CohortLabel, gbc);
         gbc.gridy++;

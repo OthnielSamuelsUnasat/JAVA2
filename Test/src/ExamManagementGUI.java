@@ -1,9 +1,12 @@
 import backend.api_requests;
+import backend.custompackages.ButtonEditor;
+import backend.custompackages.ButtonRenderer;
 import backend.models.Course;
 import backend.models.Exam;
 import backend.models.Grade;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -30,6 +33,18 @@ public class ExamManagementGUI {
                 return super.getColumnClass(columnIndex);
             }
         };
+// Apply alternating row colors
+        table.setDefaultRenderer(Object.class, new TableCellRenderer() {
+            private final DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = DEFAULT_RENDERER.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                // Alternate row colors: light orange for even rows, white for odd rows
+                c.setBackground(row % 2 == 0 ? new Color(230, 174, 135) : Color.WHITE);
+                return c;
+            }
+        });
 
         table.setRowHeight(30);
 
@@ -121,9 +136,6 @@ public class ExamManagementGUI {
 
 
 
-
-
-
 // Add the button at the top of the frame
         JPanel topPanel = new JPanel();
         topPanel.add(addExamButton);
@@ -150,6 +162,7 @@ public class ExamManagementGUI {
                         "Cijfers"
                 });
             }
+
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching exam data");
         }
@@ -269,7 +282,8 @@ public class ExamManagementGUI {
         public ButtonRenderer() {
             setText("Cijfers");
             setFocusPainted(false);
-            setBackground(Color.LIGHT_GRAY);
+            setBackground(new Color(0, 28, 111));
+
         }
 
         @Override

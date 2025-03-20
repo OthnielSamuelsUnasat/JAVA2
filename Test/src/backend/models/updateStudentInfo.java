@@ -11,7 +11,8 @@ public class updateStudentInfo {
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
         dialog.setSize(400, 700);
         dialog.setLayout(new GridBagLayout());
-        dialog.getContentPane().setBackground(Color.WHITE);
+        dialog.getContentPane().setBackground(new Color(230, 174, 135));
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);

@@ -2,15 +2,21 @@ import backend.api_requests;
 import backend.custompackages.ButtonRenderer;
 import backend.custompackages.ButtonEditor;
 
+import backend.custompackages.SwingStyling;
 import backend.models.Student;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-//import backend.api_requests.*;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class StudentManagementGUI {
     public static void main(String[] args) {
+        SwingStyling.applyLookAndFeel();
 
         JFrame frame = new JFrame("Student Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -18,15 +24,35 @@ public class StudentManagementGUI {
         frame.setLayout(new BorderLayout());
 
 
-        Color primaryColor = new Color(70, 130, 180);
-        Color accentColor = new Color(255, 165, 0);
+        Color primaryColor = new Color(0, 28, 111);
+        Color accentColor = new Color(210, 86, 0);
         Color lightColor = new Color(245, 245, 245);
 
+
+
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
-                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum","Ec's", "Bewerken", "Verwijderen"});
+                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum", "Bewerken", "Verwijderen"});
+
+//        JTable table = new JTable(model);
+//        table.setRowHeight(30);
+//        table.setShowGrid(false);
+//        table.setIntercellSpacing(new Dimension(0, 0));
+//        table.setSelectionBackground(new Color(200, 200, 255));
 
         JTable table = new JTable(model);
         table.setRowHeight(30);
+        table.setShowGrid(true);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.setIntercellSpacing(new Dimension(1, 1));
+        table.setSelectionBackground(new Color(200, 200, 255));
+
+
+// Center text in table cells
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
 
 
         JPanel sidebar = new JPanel();
@@ -34,11 +60,13 @@ public class StudentManagementGUI {
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(primaryColor);
 
-        table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", Color.BLUE));
+
+        table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", new Color(0, 28, 111),Color.WHITE)); // Dark Blue
         table.getColumn("Bewerken").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
 
-        table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", Color.RED));
+        table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", new Color(0, 28, 111), Color.RED)); // Orange background with red text
         table.getColumn("Verwijderen").setCellEditor(new ButtonEditor(new JCheckBox(), model, false));
+        
 
 
         JLabel groep = new JLabel("Groepsleden");
@@ -113,6 +141,7 @@ public class StudentManagementGUI {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
             button.setForeground(Color.WHITE);
+            button.setFont(new Font("Arial", Font.BOLD, 14));
             button.setAlignmentX(Component.LEFT_ALIGNMENT);
             button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         }
@@ -134,15 +163,15 @@ public class StudentManagementGUI {
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(verwijderstudent);
 
-
         JPanel searchPanel = new JPanel(new BorderLayout());
         searchPanel.setBackground(lightColor);
-
+        searchPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JTextField searchField = new JTextField("Zoek student op naam of nummer");
+        searchField.setBorder(BorderFactory.createLineBorder(accentColor, 2));
+        searchField.setFont(new Font("Arial", Font.ITALIC, 14));
         JButton searchButton = new JButton("Zoek");
         searchButton.setBackground(accentColor);
         searchButton.setForeground(Color.WHITE);
-
         searchPanel.add(searchField, BorderLayout.CENTER);
         searchPanel.add(searchButton, BorderLayout.EAST);
 
@@ -162,6 +191,26 @@ public class StudentManagementGUI {
         fetchStudentData("", table);
 
     }
+
+// Custom Renderer to display buttons in the "Actions" column
+    static class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer(String text, Color backgroundColor, Color foregroundColor) {
+            setText(text);
+            setFocusPainted(false);
+            setBackground(backgroundColor);
+            setForeground(foregroundColor);  // Set the text color here
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+
+
+
+
     private static void fetchStudentData(String query, JTable table) {
         java.util.List<Student> students = api_requests.getStudents(query);
 
@@ -170,7 +219,7 @@ public class StudentManagementGUI {
             model.setRowCount(0); // Clear existing rows
 
             for (Student student : students) {
-                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),student.getTotal_ec(),"Bewerken", "Verwijderen"});
+                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),"Bewerken", "Verwijderen"});
             }
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");
@@ -178,6 +227,6 @@ public class StudentManagementGUI {
     }
 
     private static String getGroepsleden() {
-       return  "SE/1123/080... - Othniel\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
+       return  "SE/1123/080... - Othniel Samuels\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
     }
 }
