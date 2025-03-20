@@ -1,9 +1,6 @@
 package backend;
 
-import backend.models.Exam;
-import backend.models.Grade;
-import backend.models.Semester;
-import backend.models.Student;
+import backend.models.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
@@ -44,16 +41,38 @@ public class api_requests{
             Gson gson = new Gson();
             Student[] students = gson.fromJson(response.body(), Student[].class);
 
-            // Print the parsed students list as JSON
-            System.out.println("Parsed Students (JSON):");
-            System.out.println(gson.toJson(students));
-
             return List.of(students);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+
+    public static List<Course> getCourses() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "courses"))
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Parse the JSON response into a list of courses
+            Gson gson = new Gson();
+            Course[] courses = gson.fromJson(response.body(), Course[].class);
+
+            return List.of(courses); // Convert the array to a list
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 
     public static String student_toevoegen(Student student) {
         try {
@@ -88,6 +107,43 @@ public class api_requests{
             return("Fout bij API-aanroep: " + e.getMessage());
         }
     }
+
+
+
+    public static String exam_toevoegen(Exam exam) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(exam);
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "exams"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            if (response.statusCode() == 201 || response.statusCode() == 200) {
+                // Parse the JSON response into a Student object
+                return response.body();
+            } else {
+                return ("Fout bij opslaan: " + response.statusCode() +  response.body());
+            }
+        } catch (JsonSyntaxException e) {
+            return("Fout bij JSON-parsing: " + e.getMessage());
+
+        } catch (Exception e) {
+            return("Fout bij API-aanroep: " + e.getMessage());
+        }
+    }
+
 
 
     public static String student_bewerken(Student student) {

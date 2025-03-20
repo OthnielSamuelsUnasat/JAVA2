@@ -9,11 +9,12 @@ public class Student {
     private String birthdate;
     private String major;
     private int cohort;
+    private int total_ec;
     private String password;
     public Student() {}
 
     // Constructor for easy object creation
-    public Student(int id, String firstName, String lastName, String studentNumber, String gender, String birthdate) {
+    public Student(int id,String firstName, String lastName, String studentNumber, String gender, String birthdate) {
         this.id = id;
         this.first_name = firstName;
         this.last_name = lastName;
@@ -28,6 +29,14 @@ public class Student {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getTotal_ec() {
+        return total_ec;
+    }
+
+    public void setTotal_ec(int total_ec) {
+        this.total_ec = total_ec;
     }
 
     public String getFirstName() {
@@ -97,6 +106,6 @@ public class Student {
     // Override toString() for easier debugging and printing
     @Override
     public String toString() {
-        return "Student{id=" + id + ", firstName='" + first_name + "', lastName='" + last_name + "', studentNumber='" + student_number + "', gender='" + gender + "', birthdate='" + birthdate + "', major='" + major + "', cohort=" + cohort + "}";
+        return "Student{id=" + id + ", firstName='" + first_name + "', lastName='" + last_name + "', studentNumber='" + student_number + "', gender='" + gender + "', birthdate='" + birthdate + "', major='" + major + "', cohort=" + cohort + ", totalEC=" + total_ec + "}";
     }
 }

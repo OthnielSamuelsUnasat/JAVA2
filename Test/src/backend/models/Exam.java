@@ -8,9 +8,17 @@ public class Exam {
     private String course_name;
     private int semester;
     private String type;
+    private String exam_type;
     private Date date;
+    private String exam_date;
 
     // Constructor
+    public Exam(Integer course_id, String exam_type, String exam_date) {
+        this.course_id = course_id;
+        this.exam_type = exam_type;
+        this.exam_date = exam_date;
+    }
+
     public Exam(int id, int course_id, String course_name, int semester, String type, Date date) {
         this.id = id;
         this.course_id = course_id;
@@ -19,6 +27,8 @@ public class Exam {
         this.type = type;
         this.date = date;
     }
+
+
 
     // Getters and Setters
     public int getId() {

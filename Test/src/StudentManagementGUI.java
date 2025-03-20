@@ -23,7 +23,7 @@ public class StudentManagementGUI {
         Color lightColor = new Color(245, 245, 245);
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
-                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum", "Bewerken", "Verwijderen"});
+                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum","Ec's", "Bewerken", "Verwijderen"});
 
         JTable table = new JTable(model);
         table.setRowHeight(30);
@@ -170,7 +170,7 @@ public class StudentManagementGUI {
             model.setRowCount(0); // Clear existing rows
 
             for (Student student : students) {
-                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),"Bewerken", "Verwijderen"});
+                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),student.getTotal_ec(),"Bewerken", "Verwijderen"});
             }
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");

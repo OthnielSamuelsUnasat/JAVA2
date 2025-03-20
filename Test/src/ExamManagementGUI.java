@@ -1,4 +1,5 @@
 import backend.api_requests;
+import backend.models.Course;
 import backend.models.Exam;
 import backend.models.Grade;
 
@@ -15,6 +16,7 @@ public class ExamManagementGUI {
 
     // Method to display the exams and the "View Exam Details" button in a JFrame
     public static void displayExams(JFrame frame) {
+
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Course ID", "Course Name", "Semester", "Type", "Date", "Actions"});
 
@@ -50,6 +52,83 @@ public class ExamManagementGUI {
 
         frame.setSize(800, 400);
         frame.setVisible(true);
+
+
+        JButton addExamButton = new JButton("Add Exam");
+        addExamButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Course> courses = api_requests.getCourses(); // Fetch courses from API
+                if (courses == null) {
+                    JOptionPane.showMessageDialog(frame, "Failed to load courses.");
+                    return;
+                }
+
+                JComboBox<Course> courseDropdown = new JComboBox<>(courses.toArray(new Course[0]));
+
+                JTextField codeField = new JTextField();
+                JTextField examTypeField = new JTextField();
+                JTextField examDateField = new JTextField();
+
+                JPanel panel = new JPanel(new GridLayout(0, 1));
+                panel.add(new JLabel("Select Course:"));
+                panel.add(courseDropdown);
+                panel.add(new JLabel("Exam Type (Regulier/Her):"));
+                panel.add(examTypeField);
+                panel.add(new JLabel("Exam Date (YYYY-MM-DD, optional):"));
+                panel.add(examDateField);
+
+                int result = JOptionPane.showConfirmDialog(frame, panel, "Add New Exam", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    try {
+                        Course selectedCourse = (Course) courseDropdown.getSelectedItem();
+                        Integer courseId = selectedCourse != null ? selectedCourse.getId() : null;
+                        String code = codeField.getText().trim().isEmpty() ? null : codeField.getText().trim();
+                        String examType = examTypeField.getText().trim();
+
+                        if (!examType.equals("Regulier") && !examType.equals("Her")) {
+                            JOptionPane.showMessageDialog(frame, "Invalid exam type! Use 'Regulier' or 'Her'.");
+                            return;
+                        }
+
+                        String examDateStr = examDateField.getText().trim().isEmpty() ? null : examDateField.getText().trim();
+
+                        if (courseId == null && (code == null || code.isEmpty())) {
+                            JOptionPane.showMessageDialog(frame, "Either Course ID or Code must be provided.");
+                            return;
+                        }
+
+                        // Create the Exam object based on the user inputs
+                        Exam newExam = new Exam(courseId, examType, examDateStr);
+
+                        // Send the new exam data to the API
+                        String success = api_requests.exam_toevoegen(newExam);
+
+                        if (success != null && success.contains("New exam inserted successfully")) {
+                            JOptionPane.showMessageDialog(frame, "Exam successfully added.");
+                            fetchExamData(table);  // Refresh the table with the updated exam list
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Error: " + (success != null ? success : "Unknown error"));
+                        }
+
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(frame, "An error occurred: " + ex.getMessage());
+                    }
+                }
+            }
+        });
+
+
+
+
+
+
+
+// Add the button at the top of the frame
+        JPanel topPanel = new JPanel();
+        topPanel.add(addExamButton);
+        frame.add(topPanel, BorderLayout.NORTH);
+
     }
 
     // Fetch and populate exam data
@@ -222,7 +301,7 @@ public class ExamManagementGUI {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("View Exam Details");
+            button.setText("Cijfers");
             return button;
         }
     }
@@ -232,4 +311,6 @@ public class ExamManagementGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         displayExams(frame);
     }
+
+
 }
