@@ -28,7 +28,7 @@ public class StudentManagementGUI {
         JTable table = new JTable(model);
         table.setRowHeight(30);
 
-        
+
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(250, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
@@ -52,7 +52,7 @@ public class StudentManagementGUI {
         groepsleden.setWrapStyleWord(true);
         JScrollPane groepPane = new JScrollPane(groepsleden);
 
-        groepsleden.setText("SE/1123/080... - Othniel\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan");
+        groepsleden.setText(getGroepsleden());
 
 
         JFrame frame_student_toevoegen = new JFrame("Student Toevoegen");
@@ -70,22 +70,50 @@ public class StudentManagementGUI {
 
 
 
+        JFrame frame_view_semesters = new JFrame("Semesters Bekijken");
+        frame_view_semesters.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_view_semesters.setSize(1200, 1200);
+        frame_view_semesters.setLayout(new BorderLayout());
+
+        JButton btn_view_semesters = new JButton("+ Semesters Bekijken");
+        btn_view_semesters.addActionListener(e -> {
+            SemesterManagementGUI.displaySemesters(frame_view_semesters);
+
+            // Ensure the table refreshes after the dialog closes
+            SwingUtilities.invokeLater(() -> fetchStudentData("", table));
+        });
+
+        JFrame frame_view_exams = new JFrame("Examens Bekijken");
+        frame_view_exams.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_view_exams.setSize(1200, 1200);
+        frame_view_exams.setLayout(new BorderLayout());
+
+        JButton btn_view_exams = new JButton("+ Examens Bekijken");
+        btn_view_exams.addActionListener(e -> {
+            ExamManagementGUI.displayExams(frame_view_exams);
+
+            // Ensure the table refreshes after the dialog closes
+            SwingUtilities.invokeLater(() -> fetchStudentData("", table));
+        });
+
+
         frame.add(btn_student_toevoegen);
+        frame.add(btn_view_semesters);
+        frame.add(btn_view_exams);
+
         frame.setVisible(true);
-
-
 
         JButton cijfer = new JButton("+ Voeg Cijfer Toe");
         JButton gemiddelde = new JButton("+ Bereken Gemiddelde");
         JButton verwijderstudent = new JButton("- Verwijder Student");
 
 
-        JButton[] buttons = {btn_student_toevoegen, cijfer, gemiddelde, verwijderstudent};
+        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams,cijfer, gemiddelde, verwijderstudent};
         for (JButton button : buttons) {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
             button.setForeground(Color.WHITE);
-            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setAlignmentX(Component.LEFT_ALIGNMENT);
             button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         }
 
@@ -95,6 +123,10 @@ public class StudentManagementGUI {
         sidebar.add(groepPane);
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(btn_student_toevoegen);
+        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(btn_view_semesters);
+        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(btn_view_exams);
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(cijfer);
         sidebar.add(Box.createVerticalStrut(50));
@@ -143,5 +175,9 @@ public class StudentManagementGUI {
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");
         }
+    }
+
+    private static String getGroepsleden() {
+       return  "SE/1123/080... - Othniel\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
     }
 }

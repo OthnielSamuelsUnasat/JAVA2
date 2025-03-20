@@ -1,5 +1,8 @@
 package backend;
 
+import backend.models.Exam;
+import backend.models.Grade;
+import backend.models.Semester;
 import backend.models.Student;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -16,7 +19,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class api_requests{
 
@@ -87,19 +92,6 @@ public class api_requests{
 
     public static String student_bewerken(Student student) {
         try {
-//            String studentNumber = student.getStudentNumber();
-//
-//            String[] parts = studentNumber.split("/");
-//            if (parts.length == 3) {
-//                // Pad the last part with leading zeros if necessary
-//                String lastPart = parts[2];
-//                if (lastPart.length() < 3) {
-//                    lastPart = String.format("%03d", Integer.parseInt(lastPart)); // Pad to 3 digits
-//                    studentNumber = parts[0] + "/" + parts[1] + "/" + lastPart;
-//                    student.setStudentNumber(studentNumber);
-//                }
-//            }
-
 
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
@@ -169,13 +161,85 @@ public class api_requests{
         }
     }
 
+    public static List<Semester> getSemesters() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "semesters"))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                Gson gson = new Gson();
+                Semester[] semesters = gson.fromJson(response.body(), Semester[].class);
+                return List.of(semesters);
+
+            } else {
+                System.err.println("Error fetching semesters: " + response.statusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
+    public static List<Exam> getExams() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "exams"))
+                    .build();
 
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    // Helper class for request body
+            if (response.statusCode() == 200) {
+                Gson gson = new Gson();
+                Exam[] exams = gson.fromJson(response.body(), Exam[].class);
+                return List.of(exams);
 
+            } else {
+                System.err.println("Error fetching semesters: " + response.statusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
+    public static List<Grade> getGradesForExam(int exam_id) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "scores"))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                Gson gson = new Gson();
+                Grade[] grades = gson.fromJson(response.body(), Grade[].class);
+
+                // Convert the array to a list and filter by exam_id
+                List<Grade> filteredGrades = new ArrayList<>(Arrays.asList(grades));
+                filteredGrades = filteredGrades.stream()
+                        .filter(grade -> grade.getExam_id() == exam_id)
+                        .collect(Collectors.toList());
+
+                return filteredGrades;
+
+            } else {
+                System.err.println("Error fetching grades: " + response.statusCode());
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
 
