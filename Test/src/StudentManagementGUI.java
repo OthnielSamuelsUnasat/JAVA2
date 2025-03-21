@@ -1,7 +1,5 @@
 import backend.api_requests;
-import backend.custompackages.ButtonRenderer;
 import backend.custompackages.ButtonEditor;
-
 import backend.custompackages.SwingStyling;
 import backend.models.Student;
 
@@ -10,9 +8,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class StudentManagementGUI {
     public static void main(String[] args) {
@@ -131,12 +126,7 @@ public class StudentManagementGUI {
 
         frame.setVisible(true);
 
-        JButton cijfer = new JButton("+ Voeg Cijfer Toe");
-        JButton gemiddelde = new JButton("+ Bereken Gemiddelde");
-        JButton verwijderstudent = new JButton("- Verwijder Student");
-
-
-        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams,cijfer, gemiddelde, verwijderstudent};
+        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams};
         for (JButton button : buttons) {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
@@ -156,12 +146,7 @@ public class StudentManagementGUI {
         sidebar.add(btn_view_semesters);
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(btn_view_exams);
-        sidebar.add(Box.createVerticalStrut(50));
-        sidebar.add(cijfer);
-        sidebar.add(Box.createVerticalStrut(50));
-        sidebar.add(gemiddelde);
-        sidebar.add(Box.createVerticalStrut(50));
-        sidebar.add(verwijderstudent);
+
 
         JPanel searchPanel = new JPanel(new BorderLayout());
         searchPanel.setBackground(lightColor);

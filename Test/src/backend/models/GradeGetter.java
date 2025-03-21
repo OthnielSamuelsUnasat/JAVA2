@@ -11,8 +11,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Grade {
-    public Grade (){}
+public class GradeGetter {
+    public GradeGetter (){}
 
     private int id;
     private int student_id;
@@ -21,7 +21,7 @@ public class Grade {
     private String course_name;
     private double score_value;
     @JsonAdapter(DateDeserializer.class)
-    private String score_datetime;
+    private Date score_datetime;
 
 
     public static class DateDeserializer implements JsonDeserializer<Date> {
@@ -37,7 +37,7 @@ public class Grade {
         }
     }
     // Constructor
-    public Grade(int id, int student_id, String student_number, int exam_id, String course_name, double score_value, String score_datetime) {
+    public GradeGetter(int id, int student_id, String student_number, int exam_id, String course_name, double score_value, Date score_datetime) {
         this.id = id;
         this.student_id = student_id;
         this.student_number = student_number;
@@ -96,11 +96,11 @@ public class Grade {
         this.score_value = score_value;
     }
 
-    public String getScore_datetime() {
+    public Date getScore_datetime() {
         return score_datetime;
     }
 
-    public void setScore_datetime(String score_datetime) {
+    public void setScore_datetime(Date score_datetime) {
         this.score_datetime = score_datetime;
     }
 

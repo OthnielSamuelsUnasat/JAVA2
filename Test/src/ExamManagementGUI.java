@@ -1,9 +1,8 @@
 import backend.api_requests;
-import backend.custompackages.ButtonEditor;
-import backend.custompackages.ButtonRenderer;
 import backend.models.Course;
 import backend.models.Exam;
 import backend.models.Grade;
+import backend.models.GradeGetter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,8 +11,13 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static backend.api_requests.exam_toevoegen;
 
 public class ExamManagementGUI {
 
@@ -73,7 +77,7 @@ public class ExamManagementGUI {
         addExamButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<Course> courses = api_requests.getCourses(); // Fetch courses from API
+                List<Course> courses = api_requests.getCoursesNotInExams(); // Fetch courses from API
                 if (courses == null) {
                     JOptionPane.showMessageDialog(frame, "Failed to load courses.");
                     return;
@@ -117,7 +121,7 @@ public class ExamManagementGUI {
                         Exam newExam = new Exam(courseId, examType, examDateStr);
 
                         // Send the new exam data to the API
-                        String success = api_requests.exam_toevoegen(newExam);
+                        String success = exam_toevoegen(newExam);
 
                         if (success != null && success.contains("New exam inserted successfully")) {
                             JOptionPane.showMessageDialog(frame, "Exam successfully added.");
@@ -170,9 +174,18 @@ public class ExamManagementGUI {
 
     private static void viewExamGrades(int examId) {
         // Fetch the grades for the selected exam
-        List<Grade> grades = api_requests.getGradesForExam(examId); // Assuming the API returns a list of grades for the exam
 
-        if (grades != null) {
+
+        List<GradeGetter> grades = api_requests.getGradesForExam(examId);
+
+// Check if grades is null and initialize it if necessary
+        if (grades == null) {
+            grades = new ArrayList<>();
+        }
+
+//        List<Grade> grades = api_requests.getGradesForExam(examId); // Assuming the API returns a list of grades for the exam
+
+
             // Create a new JFrame to display grades
             JFrame gradesFrame = new JFrame("Grades for Exam ID: " + examId);
             gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -185,16 +198,21 @@ public class ExamManagementGUI {
             String[] columnNames = {"Student Number", "Course", "Score", "Date"};
 
             // Prepare data for the JTable
-            String[][] data = new String[grades.size()][4];
+        String[][] data = new String[grades.isEmpty() ? 1 : grades.size()][4]; // If no grades, show one empty row
+        if (grades.isEmpty()) {
+            data[0] = new String[]{"", "", "", ""}; // Placeholder empty row if no grades
+        } else {
             for (int i = 0; i < grades.size(); i++) {
-                Grade grade = grades.get(i);
+                GradeGetter grade = grades.get(i);
                 data[i][0] = grade.getStudent_number();
                 data[i][1] = grade.getCourse_name();
-                data[i][2] = grade.getScore_value();
+                data[i][2] = String.valueOf(grade.getScore_value());
                 data[i][3] = grade.getScore_datetime().toString(); // Assuming you want to display the full Date object
             }
+        }
 
-            // Create the JTable
+
+        // Create the JTable
             DefaultTableModel model = new DefaultTableModel(data, columnNames);
             JTable gradesTable = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(gradesTable);
@@ -206,7 +224,8 @@ public class ExamManagementGUI {
 
             // Create the Update Grade Button
             JButton updateGradeButton = new JButton("Update Grade");
-            updateGradeButton.addActionListener(new ActionListener() {
+        List<GradeGetter> finalGrades = grades;
+        updateGradeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Get the selected row in the table
@@ -224,7 +243,13 @@ public class ExamManagementGUI {
                         if (newScore != null && !newScore.trim().isEmpty()) {
                             // Update the grade (send to API or update the list)
                             // You should implement the logic to update the grade in the backend (API, DB, etc.)
-                            grades.get(selectedRow).setScore_value(newScore);
+                            try {
+                                double score = Double.parseDouble(newScore); // Convert String to double
+                                finalGrades.get(selectedRow).setScore_value(score);
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(gradesFrame, "Invalid score format!", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+
                             gradesTable.setValueAt(newScore, selectedRow, 2); // Update the table UI
                         }
                     } else {
@@ -235,29 +260,89 @@ public class ExamManagementGUI {
 
             // Create the Add Grade Button
             JButton addGradeButton = new JButton("Add Grade");
-            addGradeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Show a dialog to add a new grade
-                    String studentNumber = JOptionPane.showInputDialog(gradesFrame, "Enter Student Number");
-                    String course = JOptionPane.showInputDialog(gradesFrame, "Enter Course Name");
-                    String score = JOptionPane.showInputDialog(gradesFrame, "Enter Score");
+            addGradeButton.setForeground(Color.WHITE);
 
-                    if (studentNumber != null && course != null && score != null) {
-                        // Create a new Grade object
+        List<GradeGetter> finalGrades1 = grades;
+//        addGradeButton.addActionListener(new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    String studentNumber = JOptionPane.showInputDialog(gradesFrame, "Enter Student Number");
+//                    String scoreStr = JOptionPane.showInputDialog(gradesFrame, "Enter Score");
+//
+//                    if (studentNumber != null && scoreStr != null) {
+//                        try {
+//                            double score = Double.parseDouble(scoreStr); // Convert score input to double
+//
+//                            Grade newGrade = new Grade();
+//                            newGrade.setStudent_number(studentNumber);
+//                            newGrade.setExam_id(examId); // Use the exam ID from the method parameter
+//                            newGrade.setScore_value(score);
+//
+//                            String response = exam_toevoegen(newGrade);
+//                            JOptionPane.showMessageDialog(gradesFrame, response);
+//
+//                            if (response.startsWith("Fout")) {
+//                                System.err.println(response);
+//                            } else {
+//                                finalGrades1.add(newGrade);
+//                                Object[] newRow = {studentNumber, examId, score, newGrade.getScore_datetime()};
+//                                model.addRow(newRow);
+//                            }
+//                        } catch (NumberFormatException ex) {
+//                            JOptionPane.showMessageDialog(gradesFrame, "Invalid number format for Score!", "Error", JOptionPane.ERROR_MESSAGE);
+//                        }
+//                    }
+//                }
+//            });
+// Inside the Add Grade action listener
+        addGradeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String studentNumber = JOptionPane.showInputDialog(gradesFrame, "Enter Student Number");
+                String scoreStr = JOptionPane.showInputDialog(gradesFrame, "Enter Score");
+
+                if (studentNumber != null && scoreStr != null) {
+                    try {
+                        double score = Double.parseDouble(scoreStr); // Convert score input to double
+
                         Grade newGrade = new Grade();
                         newGrade.setStudent_number(studentNumber);
-                        newGrade.setCourse_name(course);
+                        newGrade.setExam_id(examId); // Use the exam ID from the method parameter
                         newGrade.setScore_value(score);
-                        newGrade.setScore_datetime(new Date()); // Set the current date/time
 
-                        // Add to the grades list and update the table
-                        grades.add(newGrade);
-                        Object[] newRow = {studentNumber, course, score, newGrade.getScore_datetime()};
-                        model.addRow(newRow); // Add row to the JTable model
+                        // Get current date as a String for the new grade
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String scoreDateString = sdf.format(new Date());
+                        newGrade.setScore_datetime(scoreDateString); // Set the date as String
+
+                        // Send new grade to API
+                        String response = exam_toevoegen(newGrade);
+                        JOptionPane.showMessageDialog(gradesFrame, response);
+
+                        if (response.startsWith("Fout")) {
+                            System.err.println(response);
+                        } else {
+                            // Convert String to Date when adding to GradeGetter list
+                            GradeGetter gradeGetter = new GradeGetter();
+                            gradeGetter.setStudent_number(studentNumber);
+                            gradeGetter.setCourse_name(gradeGetter.getCourse_name());
+                            gradeGetter.setScore_value(score);
+                            gradeGetter.setScore_datetime(sdf.parse(scoreDateString)); // Convert String to Date
+                            finalGrades1.add(gradeGetter); // Add to GradeGetter list
+
+                            Object[] newRow = {studentNumber, examId, score, scoreDateString};
+                            model.addRow(newRow);
+                        }
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(gradesFrame, "Invalid number format for Score!", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ParseException ex) {
+                        JOptionPane.showMessageDialog(gradesFrame, "Error parsing date.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-            });
+            }
+        });
+
+
 
             // Add buttons to the button panel
             buttonPanel.add(updateGradeButton);
@@ -271,9 +356,6 @@ public class ExamManagementGUI {
             gradesFrame.setSize(600, 400);
             gradesFrame.setLocationRelativeTo(null);  // This will center the frame on the screen
             gradesFrame.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(null, "Error: Grades not found.");
-        }
     }
 
 

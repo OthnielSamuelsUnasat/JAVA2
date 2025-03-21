@@ -15,9 +15,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class api_requests{
@@ -71,6 +70,29 @@ public class api_requests{
             return null;
         }
     }
+
+    public static List<Course> getCoursesNotInExams() {
+        try {
+            List<Course> courses = getCourses();
+            List<Exam> exams = getExams();
+
+            if (courses == null || exams == null) {
+                return Collections.emptyList();
+            }
+
+            Set<String> examCourseNames = exams.stream()
+                    .map(Exam::getcourse_name)
+                    .collect(Collectors.toSet());
+
+            return courses.stream()
+                    .filter(course -> !examCourseNames.contains(course.getName()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
 
 
 
@@ -266,7 +288,46 @@ public class api_requests{
         }
     }
 
-    public static List<Grade> getGradesForExam(int exam_id) {
+    public static String exam_toevoegen(Grade grade) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+            String jsonInputString = gson.toJson(grade);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = "'" + sdf.format(new Date()) + "'";  // Add quotes around the formatted date
+            grade.setScore_datetime(formattedDate);  // Now this will be sent as a string with quotes
+
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "scores"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            if (response.statusCode() == 201 || response.statusCode() == 200) {
+                // Parse the JSON response into a Student object
+                return response.body();
+            } else {
+                return ("Fout bij opslaan: " + response.statusCode() +  response.body());
+            }
+        } catch (JsonSyntaxException e) {
+            return("Fout bij JSON-parsing: " + e.getMessage());
+
+        } catch (Exception e) {
+            return("Fout bij API-aanroep: " + e.getMessage());
+        }
+    }
+
+    public static List<GradeGetter> getGradesForExam(int exam_id) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -277,16 +338,19 @@ public class api_requests{
 
             if (response.statusCode() == 200) {
                 Gson gson = new Gson();
-                Grade[] grades = gson.fromJson(response.body(), Grade[].class);
+                GradeGetter[] grades = gson.fromJson(response.body(), GradeGetter[].class);
+
+                // Convert score_datetime string to Date if needed
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
                 // Convert the array to a list and filter by exam_id
-                List<Grade> filteredGrades = new ArrayList<>(Arrays.asList(grades));
+                List<GradeGetter> filteredGrades = new ArrayList<>(Arrays.asList(grades));
                 filteredGrades = filteredGrades.stream()
                         .filter(grade -> grade.getExam_id() == exam_id)
                         .collect(Collectors.toList());
 
                 return filteredGrades;
-
             } else {
                 System.err.println("Error fetching grades: " + response.statusCode());
                 return null;
@@ -296,6 +360,40 @@ public class api_requests{
             return null;
         }
     }
+
+
+//
+//
+//    public static List<Grade> getGradesForExam(int exam_id) {
+//        try {
+//            HttpClient client = HttpClient.newHttpClient();
+//            HttpRequest request = HttpRequest.newBuilder()
+//                    .uri(URI.create(apiUrl + "scores"))
+//                    .build();
+//
+//            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//            if (response.statusCode() == 200) {
+//                Gson gson = new Gson();
+//                Grade[] grades = gson.fromJson(response.body(), Grade[].class);
+//
+//                // Convert the array to a list and filter by exam_id
+//                List<Grade> filteredGrades = new ArrayList<>(Arrays.asList(grades));
+//                filteredGrades = filteredGrades.stream()
+//                        .filter(grade -> grade.getExam_id() == exam_id)
+//                        .collect(Collectors.toList());
+//
+//                return filteredGrades;
+//
+//            } else {
+//                System.err.println("Error fetching grades: " + response.statusCode());
+//                return null;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
 
 
