@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static backend.api_requests.cijfer_bewerken;
 import static backend.api_requests.exam_toevoegen;
 
 public class ExamManagementGUI {
@@ -223,42 +224,59 @@ public class ExamManagementGUI {
             buttonPanel.setLayout(new FlowLayout());
 
             // Create the Update Grade Button
-            JButton updateGradeButton = new JButton("Update Grade");
-        List<GradeGetter> finalGrades = grades;
+        JButton updateGradeButton = new JButton("Update Grade");
+        List<Grade> finalGrades = convertToGradeList(grades);
+
         updateGradeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Get the selected row in the table
-                    int selectedRow = gradesTable.getSelectedRow();
-                    if (selectedRow != -1) {
-                        String studentNumber = (String) gradesTable.getValueAt(selectedRow, 0);
-                        String course = (String) gradesTable.getValueAt(selectedRow, 1);
-                        String currentScore = (String) gradesTable.getValueAt(selectedRow, 2);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = gradesTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    String studentNumber = (String) gradesTable.getValueAt(selectedRow, 0);
+                    String course = (String) gradesTable.getValueAt(selectedRow, 1);
+                    String currentScore = gradesTable.getValueAt(selectedRow, 2).toString();
 
-                        // Show a dialog to update the grade
-                        String newScore = JOptionPane.showInputDialog(gradesFrame,
-                                "Update Score for " + studentNumber + " in " + course,
-                                "Current Score: " + currentScore);
+                    String newScore = JOptionPane.showInputDialog(gradesFrame,
+                            "Update Score for " + studentNumber + " in " + course,
+                            currentScore);
 
-                        if (newScore != null && !newScore.trim().isEmpty()) {
-                            // Update the grade (send to API or update the list)
-                            // You should implement the logic to update the grade in the backend (API, DB, etc.)
-                            try {
-                                double score = Double.parseDouble(newScore); // Convert String to double
-                                finalGrades.get(selectedRow).setScore_value(score);
-                            } catch (NumberFormatException ex) {
-                                JOptionPane.showMessageDialog(gradesFrame, "Invalid score format!", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (newScore != null && !newScore.trim().isEmpty()) {
+                        try {
+                            double score = Double.parseDouble(newScore);
+
+                            Grade gradeToUpdate = finalGrades.get(selectedRow);
+
+                            // Ensure the ID is set
+                            if (gradeToUpdate.getId() == 0) {
+                                JOptionPane.showMessageDialog(gradesFrame, "Error: Grade ID is missing!", "Error", JOptionPane.ERROR_MESSAGE);
+                                return;
                             }
 
-                            gradesTable.setValueAt(newScore, selectedRow, 2); // Update the table UI
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(gradesFrame, "Please select a grade to update.");
-                    }
-                }
-            });
+                            gradeToUpdate.setScore_value(score);
 
-            // Create the Add Grade Button
+                            new Thread(() -> {
+                                String response = cijfer_bewerken(gradeToUpdate);
+                                SwingUtilities.invokeLater(() -> {
+                                    JOptionPane.showMessageDialog(gradesFrame, response);
+                                    if (response.startsWith("Student succesvol bijgewerkt")) {
+                                        gradesTable.setValueAt(newScore, selectedRow, 2);
+                                    }
+                                });
+                            }).start();
+
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(gradesFrame, "Invalid score format!", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(gradesFrame, "Please select a grade to update.");
+                }
+            }
+        });
+
+
+
+        // Create the Add Grade Button
             JButton addGradeButton = new JButton("Add Grade");
             addGradeButton.setForeground(Color.WHITE);
 
@@ -408,5 +426,20 @@ public class ExamManagementGUI {
         displayExams(frame);
     }
 
+    public static List<Grade> convertToGradeList(List<GradeGetter> gradeGetters) {
+        List<Grade> grades = new ArrayList<>();
+        for (GradeGetter getter : gradeGetters) {
+            grades.add(new Grade(
+                    getter.getId(),
+                    getter.getStudent_id(),
+                    getter.getStudent_number(),
+                    getter.getExam_id(),
+                    getter.getCourse_name(),
+                    getter.getScore_value(),
+                    getter.getScore_datetime().toString() // Convert Date to String
+            ));
+        }
+        return grades;
+    }
 
 }

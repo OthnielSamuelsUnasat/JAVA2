@@ -15,6 +15,7 @@ public class GradeGetter {
     public GradeGetter (){}
 
     private int id;
+    private int score_id;
     private int student_id;
     private String student_number;
     private int exam_id;
@@ -54,7 +55,19 @@ public class GradeGetter {
 
     public void setId(int id) {
         this.id = id;
+        this.score_id = id;
+
     }
+
+
+    public int getScore_id() {
+        return score_id;
+    }
+
+    public void setScore_id(int score_id) {
+        this.score_id = score_id;
+    }
+
 
     public int getStudent_id() {
         return student_id;

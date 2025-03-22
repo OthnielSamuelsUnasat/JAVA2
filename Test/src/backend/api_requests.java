@@ -203,6 +203,47 @@ public class api_requests{
     }
 
 
+    public static String cijfer_bewerken(Grade grade) {
+        try {
+            grade.setScore_id(grade.getId());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = sdf.format(new Date());  // No extra quotes
+            grade.setScore_datetime(formattedDate);
+
+
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+
+            String jsonInputString = gson.toJson(grade);
+
+            // Create the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "scores/")) // Include ID in the URL
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                    .build();
+
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            if (response.statusCode() == 200 || response.statusCode() == 204) {
+                return "Student succesvol bijgewerkt.";
+            } else {
+                return "Fout bij bijwerken: " + response.statusCode() + " " + response.body();
+            }
+        } catch (JsonSyntaxException e) {
+            return "Fout bij JSON-parsing: " + e.getMessage();
+        } catch (Exception e) {
+            return "Fout bij API-aanroep: " + e.getMessage();
+        }
+    }
+
+
     public static String student_verwijderen(Student student) {
         try {
             HttpClient client = HttpClient.newHttpClient();
