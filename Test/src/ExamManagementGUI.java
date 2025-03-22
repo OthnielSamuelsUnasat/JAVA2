@@ -164,7 +164,8 @@ public class ExamManagementGUI {
                         exam.getSemester(),
                         exam.getType(),
                         exam.getDate(),
-                        "Cijfers"
+                        "Cijfers",
+                        "Edit exam"
                 });
             }
 

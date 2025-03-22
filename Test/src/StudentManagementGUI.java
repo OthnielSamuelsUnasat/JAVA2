@@ -82,10 +82,10 @@ public class StudentManagementGUI {
         sidebar.setBackground(primaryColor);
 
 
-        table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", new Color(0, 28, 111),Color.WHITE)); // Dark Blue
+        table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", new Color(0, 28, 111),Color.WHITE));
         table.getColumn("Bewerken").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
 
-        table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", new Color(0, 28, 111), Color.RED)); // Orange background with red text
+        table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", new Color(0, 28, 111), Color.RED));
         table.getColumn("Verwijderen").setCellEditor(new ButtonEditor(new JCheckBox(), model, false));
         
 
@@ -146,23 +146,40 @@ public class StudentManagementGUI {
         });
 
 
+        JButton btn_instructions = new JButton("Instructies");
+        btn_instructions.addActionListener(e -> {
+
+            JFrame instructionsFrame = new JFrame("Instructies");
+            instructionsFrame.setSize(600, 400);
+            instructionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+
+            JTextArea instructionsArea = new JTextArea(15, 40);
+            instructionsArea.setEditable(false);
+            instructionsArea.setText("Welkom.\n" +
+                    "\\n\\n\\ -U kunt drukken op Student toevoegen om een student bij te zetten. U kunt daarna de informatie bezichten in the home pagina. Daar zult u een verwijder knopje zien, indien je een student wenst te verwijderen. Als u een verandering moet plegen bij een student kunt u drukken op bewerken.\n" +
+                    "\\n -U kunt de semesters bekijken en de informatie daar toevoegen of bewerken.\n" +
+                    "\\n -U kunt de examen informatie bekijken door het knopje te drukken, daar in zou je ook de informatie kunnen wijzigen, toevoegen of verwijderen/\n" +
+                    "\\n -U kunt bij examen per examen de cijfers doorgeven van de studenten.\n" +
+                    "\\n -Wij hopen u genoeg geïnformeerd te hebben bij deze.\n");
+            instructionsArea.setLineWrap(true);
+            instructionsArea.setWrapStyleWord(true);
+            JScrollPane scrollPane = new JScrollPane(instructionsArea);
+
+            instructionsFrame.add(scrollPane, BorderLayout.CENTER);
+            instructionsFrame.setVisible(true);
+        });
+
+
+
         frame.add(btn_student_toevoegen);
         frame.add(btn_view_semesters);
         frame.add(btn_view_exams);
-
+        frame.add(btn_instructions);
         frame.setVisible(true);
 
-//        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams};
-//        for (JButton button : buttons) {
-//            button.setFocusPainted(false);
-//            button.setBackground(accentColor);
-//            button.setForeground(Color.WHITE);
-//            button.setFont(new Font("Arial", Font.BOLD, 14));
-//            button.setAlignmentX(Component.LEFT_ALIGNMENT);
-//            button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-//        }
 
-        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters, btn_view_exams};
+        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters, btn_view_exams,btn_instructions};
         for (JButton button : buttons) {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
@@ -183,6 +200,8 @@ public class StudentManagementGUI {
         sidebar.add(btn_view_semesters);
         sidebar.add(Box.createVerticalStrut(50));
         sidebar.add(btn_view_exams);
+        sidebar.add(Box.createVerticalStrut(50));
+        sidebar.add(btn_instructions);
 
 
         JPanel searchPanel = new JPanel(new BorderLayout());
