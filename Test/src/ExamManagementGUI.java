@@ -289,46 +289,6 @@ public class ExamManagementGUI {
         // Delete function
 
 
-        // Create the Delete Grade Button
-        JButton deleteGradeButton = new JButton("Delete Grade");
-
-        deleteGradeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = gradesTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String studentNumber = (String) gradesTable.getValueAt(selectedRow, 0);
-                    String course = (String) gradesTable.getValueAt(selectedRow, 1);
-
-                    int confirmation = JOptionPane.showConfirmDialog(gradesFrame,
-                            "Are you sure you want to delete the grade for " + studentNumber + " in " + course + "?",
-                            "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-                    if (confirmation == JOptionPane.YES_OPTION) {
-                        Grade gradeToDelete = finalGrades.get(selectedRow);
-
-                        // Ensure the ID is set
-                        if (gradeToDelete.getId() == 0) {
-                            JOptionPane.showMessageDialog(gradesFrame, "Error: Grade ID is missing!", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        new Thread(() -> {
-                            String response = cijfer_verwijderen(gradeToDelete);
-                            SwingUtilities.invokeLater(() -> {
-                                JOptionPane.showMessageDialog(gradesFrame, response);
-                                if (response.startsWith("Student succesvol verwijderd")) {
-                                    // Remove from the table
-                                    ((DefaultTableModel) gradesTable.getModel()).removeRow(selectedRow);
-                                }
-                            });
-                        }).start();
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(gradesFrame, "Please select a grade to delete.");
-                }
-            }
-        });
 
 
 
@@ -423,7 +383,7 @@ public class ExamManagementGUI {
             // Add buttons to the button panel
             buttonPanel.add(updateGradeButton);
             buttonPanel.add(addGradeButton);
-            buttonPanel.add(deleteGradeButton);
+
             panel.add(buttonPanel, BorderLayout.SOUTH);
 
             // Add the panel to the JFrame
