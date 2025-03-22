@@ -244,6 +244,50 @@ public class api_requests{
     }
 
 
+
+
+
+    public static String cijfer_verwijderen(Grade grade) {
+        try {
+            // Ensure grade ID is provided
+            int gradeId = grade.getId();
+
+            if (gradeId == 0) {
+                return "Error: Grade ID is missing!";
+            }
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Create the DELETE request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "scores/" + gradeId)) // Correct API endpoint
+                    .header("Content-Type", "application/json")
+                    .DELETE()
+                    .build();
+
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Log response details
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
+
+            // Handle success/failure based on status code
+            if (response.statusCode() == 200 || response.statusCode() == 204) {
+                return "Student succesvol verwijderd.";
+            } else {
+                return "Fout bij verwijderen: " + response.statusCode() + " " + response.body();
+            }
+        } catch (Exception e) {
+            return "Fout bij API-aanroep: " + e.getMessage();
+        }
+    }
+
+
+
+
+
+
     public static String student_verwijderen(Student student) {
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -401,6 +445,9 @@ public class api_requests{
             return null;
         }
     }
+
+
+
 
 
 //

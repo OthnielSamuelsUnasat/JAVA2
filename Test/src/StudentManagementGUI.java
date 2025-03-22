@@ -28,18 +28,44 @@ public class StudentManagementGUI {
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum", "Bewerken", "Verwijderen"});
 
-//        JTable table = new JTable(model);
-//        table.setRowHeight(30);
-//        table.setShowGrid(false);
-//        table.setIntercellSpacing(new Dimension(0, 0));
-//        table.setSelectionBackground(new Color(200, 200, 255));
 
-        JTable table = new JTable(model);
+
+        JTable table = new JTable(model) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+
+                // Preserve button colors by skipping the "Bewerken" and "Verwijderen" columns
+                String columnName = getColumnName(column);
+                if (!columnName.equals("Bewerken") && !columnName.equals("Verwijderen")) {
+                    if (!isRowSelected(row)) {
+                        c.setBackground(row % 2 == 0 ? new Color(230, 174, 135) : Color.WHITE); // Alternating row colors
+                    } else {
+                        c.setBackground(new Color(200, 200, 255)); // Selection color
+                    }
+                }
+
+                if (c instanceof JLabel) {
+                    ((JLabel) c).setHorizontalAlignment(JLabel.CENTER); // Center text
+                }
+
+                return c;
+            }
+        };
+
         table.setRowHeight(30);
         table.setShowGrid(true);
         table.setGridColor(Color.LIGHT_GRAY);
         table.setIntercellSpacing(new Dimension(1, 1));
-        table.setSelectionBackground(new Color(200, 200, 255));
+
+
+//Withou styling. Double check w team
+//        JTable table = new JTable(model);
+//        table.setRowHeight(30);
+//        table.setShowGrid(true);
+//        table.setGridColor(Color.LIGHT_GRAY);
+//        table.setIntercellSpacing(new Dimension(1, 1));
+//        table.setSelectionBackground(new Color(200, 200, 255));
 
 
 // Center text in table cells
@@ -83,11 +109,11 @@ public class StudentManagementGUI {
         frame_student_toevoegen.setSize(1200, 1200);
         frame_student_toevoegen.setLayout(new BorderLayout());
 
-        JButton btn_student_toevoegen = new JButton("+ Voeg Student Toe");
+        JButton btn_student_toevoegen = new JButton("Voeg Student Toe");
         btn_student_toevoegen.addActionListener(e -> {
             StudentToevoegenGUI.openStudentForm();
 
-            // Ensure the table refreshes after the dialog closes
+            // Closen
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -98,11 +124,11 @@ public class StudentManagementGUI {
         frame_view_semesters.setSize(1200, 1200);
         frame_view_semesters.setLayout(new BorderLayout());
 
-        JButton btn_view_semesters = new JButton("+ Semesters Bekijken");
+        JButton btn_view_semesters = new JButton("Semesters Bekijken");
         btn_view_semesters.addActionListener(e -> {
             SemesterManagementGUI.displaySemesters(frame_view_semesters);
 
-            // Ensure the table refreshes after the dialog closes
+            // refrsh na closen
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -111,11 +137,11 @@ public class StudentManagementGUI {
         frame_view_exams.setSize(1200, 1200);
         frame_view_exams.setLayout(new BorderLayout());
 
-        JButton btn_view_exams = new JButton("+ Examens Bekijken");
+        JButton btn_view_exams = new JButton("Examens Bekijken");
         btn_view_exams.addActionListener(e -> {
             ExamManagementGUI.displayExams(frame_view_exams);
 
-            // Ensure the table refreshes after the dialog closes
+            // refrsh na closen
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -126,14 +152,25 @@ public class StudentManagementGUI {
 
         frame.setVisible(true);
 
-        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams};
+//        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters,btn_view_exams};
+//        for (JButton button : buttons) {
+//            button.setFocusPainted(false);
+//            button.setBackground(accentColor);
+//            button.setForeground(Color.WHITE);
+//            button.setFont(new Font("Arial", Font.BOLD, 14));
+//            button.setAlignmentX(Component.LEFT_ALIGNMENT);
+//            button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+//        }
+
+        JButton[] buttons = {btn_student_toevoegen, btn_view_semesters, btn_view_exams};
         for (JButton button : buttons) {
             button.setFocusPainted(false);
             button.setBackground(accentColor);
             button.setForeground(Color.WHITE);
             button.setFont(new Font("Arial", Font.BOLD, 14));
-            button.setAlignmentX(Component.LEFT_ALIGNMENT);
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);  // Center the buttons
             button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+            button.setPreferredSize(new Dimension(200, 50));
         }
 
 
@@ -191,10 +228,6 @@ public class StudentManagementGUI {
             return this;
         }
     }
-
-
-
-
 
     private static void fetchStudentData(String query, JTable table) {
         java.util.List<Student> students = api_requests.getStudents(query);
