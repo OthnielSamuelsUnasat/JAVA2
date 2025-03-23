@@ -290,6 +290,38 @@ public class ExamManagementGUI {
         // Delete function
 
 
+        JButton deleteGradeButton = new JButton("Delete Grade");
+
+        deleteGradeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = gradesTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int confirm = JOptionPane.showConfirmDialog(gradesFrame, "Are you sure you want to delete this grade?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        Grade gradeToDelete = finalGrades.get(selectedRow);
+
+                        if (gradeToDelete.getId() == 0) {
+                            JOptionPane.showMessageDialog(gradesFrame, "Error: Grade ID is missing!", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        new Thread(() -> {
+                            String response = api_requests.cijfer_verwijderen(gradeToDelete);
+                            SwingUtilities.invokeLater(() -> {
+                                JOptionPane.showMessageDialog(gradesFrame, response);
+                                if (response.startsWith("Student succesvol verwijderd")) {
+                                    finalGrades.remove(selectedRow);
+                                    ((DefaultTableModel) gradesTable.getModel()).removeRow(selectedRow);
+                                }
+                            });
+                        }).start();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(gradesFrame, "Please select a grade to delete.");
+                }
+            }
+        });
 
 
 
@@ -383,6 +415,8 @@ public class ExamManagementGUI {
 
             // Add buttons to the button panel
             buttonPanel.add(updateGradeButton);
+
+            buttonPanel.add(deleteGradeButton);
             buttonPanel.add(addGradeButton);
 
             panel.add(buttonPanel, BorderLayout.SOUTH);

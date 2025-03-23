@@ -246,6 +246,42 @@ public class api_requests{
 
 
 
+    public static String cijfer_verwijderen(Grade grade) {
+        try {
+            grade.setId(grade.getId());
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+
+            // Convert the student object to JSON string using Gson
+            String jsonInputString = gson.toJson(grade);
+            System.out.println("JSON Body: " + jsonInputString); // Debugging: Check JSON output
+
+            // Construct the URI for the "DELETE" action (verify with your API endpoint)
+            URI uri = URI.create(apiUrl + "scores");
+
+            // Manually send the request using HttpURLConnection since Java HttpRequest API does not support bodies in DELETE directly
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setDoOutput(true); // Enable sending body
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8)); // Send the JSON body
+
+            // Get the response code and handle it
+            int responseCode = connection.getResponseCode();
+            String responseMessage = connection.getResponseMessage();
+
+            System.out.println("Response Code: " + responseCode);
+            System.out.println("Response Body: " + responseMessage);
+
+            if (responseCode == 200 || responseCode == 204) {
+                return "Student succesvol verwijderd.";
+            } else {
+                return "Fout bij verwijderen: " + responseCode + " " + responseMessage;
+            }
+        } catch (Exception e) {
+            return "Fout bij API-aanroep: " + e.getMessage();
+        }
+    }
 
 
     public static String student_verwijderen(Student student) {
