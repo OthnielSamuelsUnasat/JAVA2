@@ -1,6 +1,7 @@
 import backend.api_requests;
 import backend.custompackages.ButtonEditor;
 import backend.custompackages.SwingStyling;
+import backend.models.GradeGetter;
 import backend.models.Student;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.*;
 
 public class StudentManagementGUI {
     public static void main(String[] args) {
@@ -26,7 +28,33 @@ public class StudentManagementGUI {
 
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
-                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum", "Bewerken", "Verwijderen"});
+                new String[]{"Student ID", "Voor Naam", "Achter Naam", "Student Nummer", "Geslacht", "Geboortedatum","Cijfers" ,"Bewerken", "Verwijderen"});
+
+        JTable table_cijfers = new JTable(model) {
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+
+                String columnName = getColumnName(column);
+                if (!columnName.equals("Cijfers") && !columnName.equals("Verwijderen")) {
+                    if (!isRowSelected(row)) {
+                        c.setBackground(row % 2 == 0 ? new Color(230, 174, 135) : Color.WHITE); // Alternating row colors
+                    } else {
+                        c.setBackground(new Color(200, 200, 255)); // Selection color
+                    }
+                }
+
+                if (c instanceof JLabel) {
+                    ((JLabel) c).setHorizontalAlignment(JLabel.CENTER); // Center text
+                }
+
+                return c;
+            }
+        };
+        table_cijfers.setRowHeight(30);
+        table_cijfers.setShowGrid(true);
+        table_cijfers.setGridColor(Color.LIGHT_GRAY);
+        table_cijfers.setIntercellSpacing(new Dimension(1, 1));
 
 
 
@@ -35,7 +63,6 @@ public class StudentManagementGUI {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
 
-                // Preserve button colors by skipping the "Bewerken" and "Verwijderen" columns
                 String columnName = getColumnName(column);
                 if (!columnName.equals("Bewerken") && !columnName.equals("Verwijderen")) {
                     if (!isRowSelected(row)) {
@@ -59,15 +86,6 @@ public class StudentManagementGUI {
         table.setIntercellSpacing(new Dimension(1, 1));
 
 
-//Withou styling. Double check w team
-//        JTable table = new JTable(model);
-//        table.setRowHeight(30);
-//        table.setShowGrid(true);
-//        table.setGridColor(Color.LIGHT_GRAY);
-//        table.setIntercellSpacing(new Dimension(1, 1));
-//        table.setSelectionBackground(new Color(200, 200, 255));
-
-
 // Center text in table cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
@@ -80,6 +98,21 @@ public class StudentManagementGUI {
         sidebar.setPreferredSize(new Dimension(250, 0));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(primaryColor);
+
+
+
+        table.getColumn("Cijfers").setCellRenderer(new ButtonRenderer("Cijfers", new Color(0, 28, 111), Color.WHITE));
+        table.getColumn("Cijfers").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
+
+        table.getColumn("Cijfers").setCellEditor(new DefaultCellEditor(new JCheckBox()) {
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                String studentId = table.getValueAt(row, 0).toString();
+                fetchStudentGrades(studentId);
+                return super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            }
+        });
+
 
 
         table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", new Color(0, 28, 111),Color.WHITE));
@@ -141,7 +174,6 @@ public class StudentManagementGUI {
         btn_view_exams.addActionListener(e -> {
             ExamManagementGUI.displayExams(frame_view_exams);
 
-            // refrsh na closen
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -256,14 +288,101 @@ public class StudentManagementGUI {
             model.setRowCount(0); // Clear existing rows
 
             for (Student student : students) {
-                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),"Bewerken", "Verwijderen"});
+                model.addRow(new Object[]{student.getId(), student.getFirstName(),student.getLastName(),student.getStudentNumber(),student.getGender(),student.getBirthdate(),"Cijfers","Bewerken", "Verwijderen"});
             }
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching student data");
         }
     }
 
+    private static void fetchStudentGrades(String studentId) {
+        // Simulate fetching grades (You should replace this with actual API request)
+        // Example: grades = api_requests.getGradesForStudent(studentId);
+        java.util.List<GradeGetter> grades = api_requests.getGradesForStudent(studentId);  // Your actual API call
+
+        // Check if grades are fetched
+        if (grades != null) {
+            // You should process and display the grades in a separate JTable or update the existing one.
+            updateGradesTable(grades);
+        } else {
+            JOptionPane.showMessageDialog(null, "Error fetching grades");
+        }
+    }
+
+    private static void updateGradesTable(java.util.List<GradeGetter> grades) {
+        // Group grades by course name
+        Map<String, Map<Integer, Double>> courseGradesMap = new LinkedHashMap<>(); // Course -> (Semester -> Grade)
+        Set<Integer> semesters = new TreeSet<>(); // Keep semesters in sorted order
+
+        for (GradeGetter grade : grades) {
+            courseGradesMap
+                    .computeIfAbsent(grade.getCourse_name(), k -> new HashMap<>())
+                    .put(grade.getSemester(), grade.getScore_value());
+            semesters.add(grade.getSemester());
+        }
+
+        // Define table columns
+        String[] columnNames = new String[semesters.size() + 2]; // Course + Semesters + Average
+        columnNames[0] = "Course";
+        int colIndex = 1;
+        for (Integer semester : semesters) {
+            columnNames[colIndex++] = "Semester " + semester;
+        }
+        columnNames[colIndex] = "Average";
+
+        // Create table model
+        DefaultTableModel gradesTableModel = new DefaultTableModel(columnNames, 0);
+
+        // Add course grades and averages
+        for (Map.Entry<String, Map<Integer, Double>> entry : courseGradesMap.entrySet()) {
+            String courseName = entry.getKey();
+            Map<Integer, Double> semesterGrades = entry.getValue();
+
+            double total = 0;
+            int count = 0;
+
+            Object[] rowData = new Object[columnNames.length];
+            rowData[0] = courseName;
+
+            colIndex = 1;
+            for (Integer semester : semesters) {
+                Double grade = semesterGrades.get(semester);
+                rowData[colIndex++] = (grade != null) ? grade : null;
+                if (grade != null) {
+                    total += grade;
+                    count++;
+                }
+            }
+
+            double average = count > 0 ? total / count : 0;
+            rowData[colIndex] = average;
+
+            gradesTableModel.addRow(rowData);
+        }
+
+        // Create JTable and add properties
+        JTable gradesTable = new JTable(gradesTableModel);
+        gradesTable.setRowHeight(30);
+        gradesTable.setShowGrid(true);
+        gradesTable.setGridColor(Color.LIGHT_GRAY);
+        gradesTable.setIntercellSpacing(new Dimension(1, 1));
+
+        // Create JScrollPane to display the grades table
+        JScrollPane scrollPane = new JScrollPane(gradesTable);
+
+        // Create frame to show the grades table
+        JFrame gradesFrame = new JFrame("Grades for Student");
+        gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        gradesFrame.setSize(800, 400);
+        gradesFrame.add(scrollPane, BorderLayout.CENTER);
+        gradesFrame.setVisible(true);
+    }
+
+
+
+
     private static String getGroepsleden() {
        return  "SE/1123/080... - Othniel Samuels\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
     }
+
 }

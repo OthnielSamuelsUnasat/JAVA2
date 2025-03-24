@@ -20,6 +20,8 @@ public class GradeGetter {
     private String student_number;
     private int exam_id;
     private String course_name;
+    private int semester;
+
     private double score_value;
     @JsonAdapter(DateDeserializer.class)
     private Date score_datetime;
@@ -38,13 +40,14 @@ public class GradeGetter {
         }
     }
     // Constructor
-    public GradeGetter(int id, int student_id, String student_number, int exam_id, String course_name, double score_value, Date score_datetime) {
+    public GradeGetter(int id,int semester ,int student_id, String student_number, int exam_id, String course_name, double score_value, Date score_datetime) {
         this.id = id;
         this.student_id = student_id;
         this.student_number = student_number;
         this.exam_id = exam_id;
         this.course_name = course_name;
         this.score_value = score_value;
+        this.semester = semester;
         this.score_datetime = score_datetime;
     }
 
@@ -57,6 +60,14 @@ public class GradeGetter {
         this.id = id;
         this.score_id = id;
 
+    }
+
+    public int getSemester() {
+        return semester;
+    }
+
+    public void setSemester(int semester) {
+        this.semester = semester;
     }
 
 

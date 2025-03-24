@@ -19,7 +19,13 @@ public class ButtonEditor extends DefaultCellEditor {
         this.model = model;
         this.isEditButton = isEditButton;
 
-        button = new JButton(isEditButton ? "Bewerken" : "Verwijderen");
+        if (isEditButton) {
+            button = new JButton("Bewerken");
+            button = new JButton("Cijfers");
+        } else {
+            button = new JButton("Verwijderen");
+        }
+
         button.setForeground(Color.WHITE);
         button.setBackground(isEditButton ? Color.BLUE : Color.RED);
         button.setOpaque(true);

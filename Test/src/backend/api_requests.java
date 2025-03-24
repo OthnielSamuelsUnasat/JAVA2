@@ -102,14 +102,12 @@ public class api_requests{
             Gson gson = new Gson();
             String jsonInputString = gson.toJson(student);
 
-            // Create the HTTP request
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "students"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
                     .build();
 
-            // Send the request and get the response
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // Log response details
@@ -369,6 +367,33 @@ public class api_requests{
         }
     }
 
+
+    public static List<GradeGetter> getGradesForStudent(String student_number) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl+"scores?id="+ student_number))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                Gson gson = new Gson();
+                // Parse the entire response into a list of GradeGetter objects
+                GradeGetter[] allGrades = gson.fromJson(response.body(), GradeGetter[].class);
+
+                return List.of(allGrades);
+            } else {
+                System.err.println("Error fetching grades: " + response.statusCode());
+                return Collections.emptyList();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+
     public static String exam_toevoegen(Grade grade) {
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -556,7 +581,10 @@ public class api_requests{
 
 
 
-}
+
+
+
+    }
 }
 class StudentDeleteRequest {
     private int student_id;
