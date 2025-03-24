@@ -51,6 +51,10 @@ public class StudentManagementGUI {
                 return c;
             }
         };
+
+
+
+
         table_cijfers.setRowHeight(30);
         table_cijfers.setShowGrid(true);
         table_cijfers.setGridColor(Color.LIGHT_GRAY);
@@ -101,8 +105,10 @@ public class StudentManagementGUI {
 
 
 
-        table.getColumn("Cijfers").setCellRenderer(new ButtonRenderer("Cijfers", new Color(0, 28, 111), Color.WHITE));
+
+        table.getColumn("Cijfers").setCellRenderer(new ButtonRenderer("Cijfers", new Color(0, 28, 111), Color.BLACK));
         table.getColumn("Cijfers").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
+
 
         table.getColumn("Cijfers").setCellEditor(new DefaultCellEditor(new JCheckBox()) {
             @Override
@@ -114,13 +120,15 @@ public class StudentManagementGUI {
         });
 
 
-
         table.getColumn("Bewerken").setCellRenderer(new ButtonRenderer("Bewerken", new Color(0, 28, 111),Color.WHITE));
         table.getColumn("Bewerken").setCellEditor(new ButtonEditor(new JCheckBox(), model, true));
 
         table.getColumn("Verwijderen").setCellRenderer(new ButtonRenderer("Verwijderen", new Color(0, 28, 111), Color.RED));
         table.getColumn("Verwijderen").setCellEditor(new ButtonEditor(new JCheckBox(), model, false));
-        
+
+
+
+
 
 
         JLabel groep = new JLabel("Groepsleden");
@@ -186,22 +194,54 @@ public class StudentManagementGUI {
             instructionsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
+            instructionsFrame.getContentPane().setBackground(new Color(240, 240, 240));
+
+
             JTextArea instructionsArea = new JTextArea(15, 40);
             instructionsArea.setEditable(false);
+
+
             instructionsArea.setText("Welkom.\n" +
-                    "\\n\\n\\ -U kunt drukken op Student toevoegen om een student bij te zetten. U kunt daarna de informatie bezichten in the home pagina. Daar zult u een verwijder knopje zien, indien je een student wenst te verwijderen. Als u een verandering moet plegen bij een student kunt u drukken op bewerken.\n" +
-                    "\\n -U kunt de semesters bekijken en de informatie daar toevoegen of bewerken.\n" +
-                    "\\n -U kunt de examen informatie bekijken door het knopje te drukken, daar in zou je ook de informatie kunnen wijzigen, toevoegen of verwijderen/\n" +
-                    "\\n -U kunt bij examen per examen de cijfers doorgeven van de studenten.\n" +
-                    "\\n -Wij hopen u genoeg geïnformeerd te hebben bij deze.\n");
+                    "- U kunt drukken op 'Student toevoegen' om een student bij te voegen. U kunt daarna de informatie bezichtigen op de homepagina. Daar zult u een verwijderknop zien, indien u een student wenst te verwijderen. Als u een verandering moet plegen bij een student, kunt u drukken op 'Bewerken'.\n" +
+                    "- U kunt de semesters bekijken en de informatie daar toevoegen of bewerken.\n" +
+                    "- U kunt de exameninformatie bekijken door op het knopje te drukken. Daar kunt u ook de informatie wijzigen, toevoegen of verwijderen.\n" +
+                    "- U kunt bij examen per examen de cijfers doorgeven van de studenten.\n" +
+                    "- Wij hopen u voldoende geïnformeerd te hebben met deze uitleg.");
+
+
+            instructionsArea.setFont(new Font("Arial", Font.PLAIN, 14));
+            instructionsArea.setForeground(new Color(50, 50, 50));
+            instructionsArea.setBackground(new Color(255, 255, 255));
+
+
             instructionsArea.setLineWrap(true);
             instructionsArea.setWrapStyleWord(true);
-            JScrollPane scrollPane = new JScrollPane(instructionsArea);
 
-            instructionsFrame.add(scrollPane, BorderLayout.CENTER);
+
+            JScrollPane scrollPane = new JScrollPane(instructionsArea);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            scrollPane.getViewport().setBackground(new Color(255, 255, 255));
+
+
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+            panel.setBackground(new Color(230, 174, 135));
+            panel.add(scrollPane, BorderLayout.CENTER);
+
+            // Add a title label
+            JLabel titleLabel = new JLabel("Instructies", SwingConstants.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            titleLabel.setForeground(new Color(0, 28, 111));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            panel.add(titleLabel, BorderLayout.NORTH);
+
+
+            instructionsFrame.setLayout(new BorderLayout());
+            instructionsFrame.add(panel, BorderLayout.CENTER);
+
+
             instructionsFrame.setVisible(true);
         });
-
 
 
         frame.add(btn_student_toevoegen);
@@ -266,12 +306,13 @@ public class StudentManagementGUI {
     }
 
 // Custom Renderer to display buttons in the "Actions" column
+
     static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer(String text, Color backgroundColor, Color foregroundColor) {
             setText(text);
             setFocusPainted(false);
             setBackground(backgroundColor);
-            setForeground(foregroundColor);  // Set the text color here
+            setForeground(foregroundColor);
         }
 
         @Override
@@ -296,13 +337,12 @@ public class StudentManagementGUI {
     }
 
     private static void fetchStudentGrades(String studentId) {
-        // Simulate fetching grades (You should replace this with actual API request)
-        // Example: grades = api_requests.getGradesForStudent(studentId);
-        java.util.List<GradeGetter> grades = api_requests.getGradesForStudent(studentId);  // Your actual API call
+
+        java.util.List<GradeGetter> grades = api_requests.getGradesForStudent(studentId);
 
         // Check if grades are fetched
         if (grades != null) {
-            // You should process and display the grades in a separate JTable or update the existing one.
+
             updateGradesTable(grades);
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching grades");
@@ -310,7 +350,7 @@ public class StudentManagementGUI {
     }
 
     private static void updateGradesTable(java.util.List<GradeGetter> grades) {
-        // Group grades by course name
+
         Map<String, Map<Integer, Double>> courseGradesMap = new LinkedHashMap<>(); // Course -> (Semester -> Grade)
         Set<Integer> semesters = new TreeSet<>(); // Keep semesters in sorted order
 
@@ -321,7 +361,7 @@ public class StudentManagementGUI {
             semesters.add(grade.getSemester());
         }
 
-        // Define table columns
+
         String[] columnNames = new String[semesters.size() + 2]; // Course + Semesters + Average
         columnNames[0] = "Course";
         int colIndex = 1;
