@@ -68,41 +68,15 @@
 
 package backend;
 
-
-
-
-import backend.models.Student;
-
 import backend.models.Course;
+import java.util.List;
+import backend.models.Student;
 import backend.models.Exam;
 import backend.models.Grade;
-import java.util.List;
-
-
-
-
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
-import backend.models.GradeGetter;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
 
-
-
-
-
-package backend;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-import java.util.List;
 
 class ApiRequestsTest {
 
