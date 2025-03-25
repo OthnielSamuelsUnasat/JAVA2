@@ -1,13 +1,14 @@
 package backend.models;
-import backend.models.Student;
+
+import backend.api_requests;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static backend.api_requests.student_toevoegen;
-
 public class updateStudentInfo {
     public static void StudentFormUpdate() {
+        backend.api_requests api_requests = new api_requests();
+
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
         dialog.setSize(400, 700);
         dialog.setLayout(new GridBagLayout());
@@ -66,7 +67,7 @@ public class updateStudentInfo {
             student.setGender((String) genderBox.getSelectedItem());
             student.setBirthdate(birthDateField.getText());
 
-            String response = student_toevoegen(student);
+            String response = api_requests.student_toevoegen(student);
 
             JOptionPane.showMessageDialog(dialog, response);
 

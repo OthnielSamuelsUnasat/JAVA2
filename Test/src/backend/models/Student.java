@@ -1,7 +1,7 @@
 package backend.models;
 
 public class Student {
-    private int id; // Identifies the student, both for internal and API purposes
+    private int id;
     private String first_name;
     private String last_name;
     private String student_number;
@@ -13,7 +13,7 @@ public class Student {
     private String password;
     public Student() {}
 
-    // Constructor for easy object creation
+
     public Student(int id,String firstName, String lastName, String studentNumber, String gender, String birthdate) {
         this.id = id;
         this.first_name = firstName;
@@ -22,7 +22,7 @@ public class Student {
         this.gender = gender;
         this.setBirthdate(birthdate);
     }
-    // Getters and Setters
+
     public int getId() {
         return id;
     }
@@ -103,7 +103,6 @@ public class Student {
         this.password = password;
     }
 
-    // Override toString() for easier debugging and printing
     @Override
     public String toString() {
         return "Student{id=" + id + ", firstName='" + first_name + "', lastName='" + last_name + "', studentNumber='" + student_number + "', gender='" + gender + "', birthdate='" + birthdate + "', major='" + major + "', cohort=" + cohort + ", totalEC=" + total_ec + "}";

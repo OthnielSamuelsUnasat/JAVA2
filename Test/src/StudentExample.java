@@ -1,12 +1,10 @@
+import backend.api_requests;
 import backend.models.Student;
 
-import javax.swing.*;
-import java.awt.*;
-
-import static backend.api_requests.student_toevoegen;
 public class StudentExample {
+    backend.api_requests api_requests = new api_requests();
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         Student student = new Student(100, "Johnny", "Doe", "SE/1121/121", "M", "2000-01-01");
 
@@ -17,7 +15,7 @@ public class StudentExample {
         student.setPassword("SecurePassword123");
 
 
-        String response = student_toevoegen(student);
+        String response = api_requests.student_toevoegen(student);
 
 
         System.out.println(response);

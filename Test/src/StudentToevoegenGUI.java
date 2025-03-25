@@ -1,12 +1,14 @@
+import backend.api_requests;
 import backend.models.Student;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static backend.api_requests.student_toevoegen;
-
 public class StudentToevoegenGUI {
+
     public static void openStudentForm() {
+        backend.api_requests api_requests = new api_requests();
+
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
         dialog.setSize(400, 750);
         dialog.setLayout(new GridBagLayout());
@@ -66,7 +68,7 @@ public class StudentToevoegenGUI {
             student.setMajor((String) richtingenBox.getSelectedItem());
             student.setBirthdate(birthDateField.getText());
 
-           String response = student_toevoegen(student);
+           String response = api_requests.student_toevoegen(student);
 
             JOptionPane.showMessageDialog(dialog, response);
 

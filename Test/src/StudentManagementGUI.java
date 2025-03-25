@@ -11,8 +11,12 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.util.*;
 
-public class StudentManagementGUI {
-    public static void main(String[] args) {
+public class StudentManagementGUI{
+
+    api_requests api_requests = new api_requests();
+
+
+    public void start() {
         SwingStyling.applyLookAndFeel();
 
         JFrame frame = new JFrame("Student Management");
@@ -113,7 +117,7 @@ public class StudentManagementGUI {
         table.getColumn("Cijfers").setCellEditor(new DefaultCellEditor(new JCheckBox()) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-                String studentId = table.getValueAt(row, 0).toString();
+                String studentId = table.getValueAt(row, 3).toString();
                 fetchStudentGrades(studentId);
                 return super.getTableCellEditorComponent(table, value, isSelected, row, column);
             }
@@ -158,6 +162,8 @@ public class StudentManagementGUI {
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
+        SemesterManagementGUI semesterManagementGUI = new SemesterManagementGUI();
+        ExamManagementGUI examManagementGUI = new ExamManagementGUI();
 
 
         JFrame frame_view_semesters = new JFrame("Semesters Bekijken");
@@ -167,9 +173,8 @@ public class StudentManagementGUI {
 
         JButton btn_view_semesters = new JButton("Semesters Bekijken");
         btn_view_semesters.addActionListener(e -> {
-            SemesterManagementGUI.displaySemesters(frame_view_semesters);
+            semesterManagementGUI.displaySemesters(frame_view_semesters);
 
-            // refrsh na closen
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -180,7 +185,7 @@ public class StudentManagementGUI {
 
         JButton btn_view_exams = new JButton("Examens Bekijken");
         btn_view_exams.addActionListener(e -> {
-            ExamManagementGUI.displayExams(frame_view_exams);
+            examManagementGUI.displayExams(frame_view_exams);
 
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
@@ -305,9 +310,10 @@ public class StudentManagementGUI {
 
     }
 
+
 // Custom Renderer to display buttons in the "Actions" column
 
-    static class ButtonRenderer extends JButton implements TableCellRenderer {
+     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer(String text, Color backgroundColor, Color foregroundColor) {
             setText(text);
             setFocusPainted(false);
@@ -321,7 +327,7 @@ public class StudentManagementGUI {
         }
     }
 
-    private static void fetchStudentData(String query, JTable table) {
+    private  void fetchStudentData(String query, JTable table) {
         java.util.List<Student> students = api_requests.getStudents(query);
 
         if (students != null) {
@@ -336,7 +342,7 @@ public class StudentManagementGUI {
         }
     }
 
-    private static void fetchStudentGrades(String studentId) {
+    private  void fetchStudentGrades(String studentId) {
 
         java.util.List<GradeGetter> grades = api_requests.getGradesForStudent(studentId);
 
@@ -349,7 +355,7 @@ public class StudentManagementGUI {
         }
     }
 
-    private static void updateGradesTable(java.util.List<GradeGetter> grades) {
+    private  void updateGradesTable(java.util.List<GradeGetter> grades) {
 
         Map<String, Map<Integer, Double>> courseGradesMap = new LinkedHashMap<>(); // Course -> (Semester -> Grade)
         Set<Integer> semesters = new TreeSet<>(); // Keep semesters in sorted order
@@ -421,7 +427,7 @@ public class StudentManagementGUI {
 
 
 
-    private static String getGroepsleden() {
+    private  String getGroepsleden() {
        return  "SE/1123/080... - Othniel Samuels\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
     }
 

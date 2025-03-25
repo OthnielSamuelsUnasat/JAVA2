@@ -9,6 +9,8 @@ import java.awt.*;
 
 
 public class ButtonEditor extends DefaultCellEditor {
+    api_requests api_requests = new api_requests();
+
     private JButton button;
     private DefaultTableModel model;
     private int row;

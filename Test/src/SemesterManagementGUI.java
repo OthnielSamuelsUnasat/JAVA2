@@ -12,8 +12,11 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class SemesterManagementGUI {
+    backend.api_requests api_requests = new api_requests();
 
-    public static void displaySemesters(JFrame frame) {
+    public  void displaySemesters(JFrame frame) {
+
+
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Semester Name", "Actions"});
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -53,7 +56,7 @@ public class SemesterManagementGUI {
         frame.setVisible(true);
     }
 
-    private static void fetchSemesterData(JTable table) {
+    private  void fetchSemesterData(JTable table) {
         List<Semester> semesters = api_requests.getSemesters();
 
         if (semesters != null) {
@@ -71,7 +74,7 @@ public class SemesterManagementGUI {
         }
     }
 
-    private static void viewCoursesForSemester(String semesterName) {
+    private  void viewCoursesForSemester(String semesterName) {
         List<Semester> semesters = api_requests.getSemesters();
         Semester selectedSemester = null;
 
@@ -123,7 +126,7 @@ public class SemesterManagementGUI {
         }
     }
 
-    static class ButtonRenderer extends JButton implements TableCellRenderer {
+     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setText("View Courses");
             setFocusPainted(false);
@@ -137,7 +140,7 @@ public class SemesterManagementGUI {
         }
     }
 
-    static class ButtonEditor extends DefaultCellEditor {
+     class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private String semesterName;
 
@@ -165,7 +168,7 @@ public class SemesterManagementGUI {
         }
     }
 
-    public static void main(String[] args) {
+    public  void main(String[] args) {
         JFrame frame = new JFrame("Semester Management");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         displaySemesters(frame);

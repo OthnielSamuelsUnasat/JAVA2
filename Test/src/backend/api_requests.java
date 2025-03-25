@@ -19,12 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class api_requests{
+public class api_requests implements  api_interface{
 
-    public static List<Student> students = new ArrayList<>();
-    private static String apiUrl = "https://trajectplannerapi.dulamari.com/";
+    public  List<Student> students = new ArrayList<>();
+    private  String apiUrl = "https://trajectplannerapi.dulamari.com/";
 
-    public static List<Student> getStudents(String query) {
+    public  List<Student> getStudents(String query) {
         try {
             HttpClient client = HttpClient.newHttpClient();
 
@@ -48,7 +48,7 @@ public class api_requests{
     }
 
 
-    public static List<Course> getCourses() {
+    public  List<Course> getCourses() {
         try {
             HttpClient client = HttpClient.newHttpClient();
 
@@ -71,7 +71,7 @@ public class api_requests{
         }
     }
 
-    public static List<Course> getCoursesNotInExams() {
+    public  List<Course> getCoursesNotInExams() {
         try {
             List<Course> courses = getCourses();
             List<Exam> exams = getExams();
@@ -96,7 +96,7 @@ public class api_requests{
 
 
 
-    public static String student_toevoegen(Student student) {
+    public  String student_toevoegen(Student student) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
@@ -110,12 +110,12 @@ public class api_requests{
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Log response details
+
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response Body: " + response.body());
 
             if (response.statusCode() == 201 || response.statusCode() == 200) {
-                // Parse the JSON response into a Student object
+
                 return response.body();
             } else {
                 return ("Fout bij opslaan: " + response.statusCode() +  response.body());
@@ -130,7 +130,7 @@ public class api_requests{
 
 
 
-    public static String exam_toevoegen(Exam exam) {
+    public  String exam_toevoegen(Exam exam) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
@@ -166,7 +166,7 @@ public class api_requests{
 
 
 
-    public static String student_bewerken(Student student) {
+    public  String student_bewerken(Student student) {
         try {
 
             HttpClient client = HttpClient.newHttpClient();
@@ -201,7 +201,7 @@ public class api_requests{
     }
 
 
-    public static String cijfer_bewerken(Grade grade) {
+    public  String cijfer_bewerken(Grade grade) {
         try {
             grade.setScore_id(grade.getId());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -244,7 +244,7 @@ public class api_requests{
 
 
 
-    public static String cijfer_verwijderen(Grade grade) {
+    public  String cijfer_verwijderen(Grade grade) {
         try {
             grade.setId(grade.getId());
             HttpClient client = HttpClient.newHttpClient();
@@ -282,7 +282,7 @@ public class api_requests{
     }
 
 
-    public static String student_verwijderen(Student student) {
+    public  String student_verwijderen(Student student) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
@@ -318,7 +318,7 @@ public class api_requests{
         }
     }
 
-    public static List<Semester> getSemesters() {
+    public  List<Semester> getSemesters() {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -343,7 +343,7 @@ public class api_requests{
     }
 
 
-    public static List<Exam> getExams() {
+    public  List<Exam> getExams() {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -368,11 +368,13 @@ public class api_requests{
     }
 
 
-    public static List<GradeGetter> getGradesForStudent(String student_number) {
+    public  List<GradeGetter> getGradesForStudent(String student_number) {
         try {
+            String modifiedStudentNumber = student_number.replace("/", "-");
+
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(apiUrl+"scores?id="+ student_number))
+                    .uri(URI.create(apiUrl+"scores/"+ modifiedStudentNumber))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -394,7 +396,7 @@ public class api_requests{
     }
 
 
-    public static String exam_toevoegen(Grade grade) {
+    public  String exam_toevoegen(Grade grade) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
@@ -433,7 +435,7 @@ public class api_requests{
         }
     }
 
-    public static List<GradeGetter> getGradesForExam(int exam_id) {
+    public  List<GradeGetter> getGradesForExam(int exam_id) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -468,47 +470,7 @@ public class api_requests{
     }
 
 
-
-
-
-//
-//
-//    public static List<Grade> getGradesForExam(int exam_id) {
-//        try {
-//            HttpClient client = HttpClient.newHttpClient();
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create(apiUrl + "scores"))
-//                    .build();
-//
-//            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//            if (response.statusCode() == 200) {
-//                Gson gson = new Gson();
-//                Grade[] grades = gson.fromJson(response.body(), Grade[].class);
-//
-//                // Convert the array to a list and filter by exam_id
-//                List<Grade> filteredGrades = new ArrayList<>(Arrays.asList(grades));
-//                filteredGrades = filteredGrades.stream()
-//                        .filter(grade -> grade.getExam_id() == exam_id)
-//                        .collect(Collectors.toList());
-//
-//                return filteredGrades;
-//
-//            } else {
-//                System.err.println("Error fetching grades: " + response.statusCode());
-//                return null;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
-
-
-
-
-    static class StudentsHandler implements HttpHandler {
+     class StudentsHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             switch (exchange.getRequestMethod()) {
@@ -579,26 +541,5 @@ public class api_requests{
             exchange.sendResponseHeaders(200, -1); // OK
         }
 
-
-
-
-
-
-    }
-}
-class StudentDeleteRequest {
-    private int student_id;
-
-    // Constructor, Getter, and Setter
-    public StudentDeleteRequest(int student_id) {
-        this.student_id = student_id;
-    }
-
-    public int getStudent_id() {
-        return student_id;
-    }
-
-    public void setStudent_id(int student_id) {
-        this.student_id = student_id;
     }
 }

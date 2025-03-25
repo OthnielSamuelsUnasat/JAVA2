@@ -17,13 +17,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static backend.api_requests.*;
-
 
 public class ExamManagementGUI {
+    api_requests api_requests = new api_requests();
 
     // Method to display the exams and the "View Exam Details" button in a JFrame
-    public static void displayExams(JFrame frame) {
+    public void displayExams(JFrame frame) {
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Course ID", "Course Name", "Semester", "Type", "Date", "Actions"});
@@ -122,7 +121,7 @@ public class ExamManagementGUI {
                         Exam newExam = new Exam(courseId, examType, examDateStr);
 
                         // Send the new exam data to the API
-                        String success = exam_toevoegen(newExam);
+                        String success = api_requests.exam_toevoegen(newExam);
 
                         if (success != null && success.contains("New exam inserted successfully")) {
                             JOptionPane.showMessageDialog(frame, "Exam successfully added.");
@@ -149,7 +148,7 @@ public class ExamManagementGUI {
     }
 
     // Fetch and populate exam data
-    private static void fetchExamData(JTable table) {
+    private  void fetchExamData(JTable table) {
         List<Exam> exams = api_requests.getExams();
 
         if (exams != null) {
@@ -174,7 +173,7 @@ public class ExamManagementGUI {
         }
     }
 
-    private static void viewExamGrades(int examId) {
+    private  void viewExamGrades(int examId) {
         // Fetch the grades for the selected exam
 
 
@@ -268,7 +267,7 @@ public class ExamManagementGUI {
                             gradeToUpdate.setScore_value(score);
 
                             new Thread(() -> {
-                                String response = cijfer_bewerken(gradeToUpdate);
+                                String response = api_requests.cijfer_bewerken(gradeToUpdate);
                                 SwingUtilities.invokeLater(() -> {
                                     JOptionPane.showMessageDialog(gradesFrame, response);
                                     if (response.startsWith("Student succesvol bijgewerkt")) {
@@ -385,7 +384,7 @@ public class ExamManagementGUI {
                         newGrade.setScore_datetime(scoreDateString); // Set the date as String
 
                         // Send new grade to API
-                        String response = exam_toevoegen(newGrade);
+                        String response = api_requests.exam_toevoegen(newGrade);
                         JOptionPane.showMessageDialog(gradesFrame, response);
 
                         if (response.startsWith("Fout")) {
@@ -432,7 +431,7 @@ public class ExamManagementGUI {
 
 
     // Custom Renderer to display buttons in the "Actions" column
-    static class ButtonRenderer extends JButton implements TableCellRenderer {
+     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setText("Cijfers");
             setFocusPainted(false);
@@ -447,7 +446,7 @@ public class ExamManagementGUI {
     }
 
     // Custom Editor to handle button clicks in the "Actions" column
-    static class ButtonEditor extends DefaultCellEditor {
+     class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private int examId;
 
@@ -474,13 +473,13 @@ public class ExamManagementGUI {
         }
     }
 
-    public static void main(String[] args) {
+    public  void main(String[] args) {
         JFrame frame = new JFrame("Exam Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         displayExams(frame);
     }
 
-    public static List<Grade> convertToGradeList(List<GradeGetter> gradeGetters) {
+    public  List<Grade> convertToGradeList(List<GradeGetter> gradeGetters) {
         List<Grade> grades = new ArrayList<>();
         for (GradeGetter getter : gradeGetters) {
             grades.add(new Grade(
