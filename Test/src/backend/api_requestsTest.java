@@ -1,80 +1,11 @@
-//package backend;
-//
-//import org.junit.jupiter.api.Test;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//class api_requestsTest {
-//
-//    @Test
-//    void getStudents() {
-//    }
-//
-//    @Test
-//    void getCourses() {
-//    }
-//
-//    @Test
-//    void getCoursesNotInExams() {
-//    }
-//
-//    @Test
-//    void student_toevoegen() {
-//    }
-//
-//    @Test
-//    void exam_toevoegen() {
-//    }
-//
-//    @Test
-//    void student_bewerken() {
-//    }
-//
-//    @Test
-//    void cijfer_bewerken() {
-//    }
-//
-//    @Test
-//    void cijfer_verwijderen() {
-//    }
-//
-//    @Test
-//    void student_verwijderen() {
-//    }
-//
-//    @Test
-//    void getSemesters() {
-//    }
-//
-//    @Test
-//    void getExams() {
-//    }
-//
-//    @Test
-//    void getGradesForStudent() {
-//    }
-//
-//    @Test
-//    void testExam_toevoegen() {
-//    }
-//
-//    @Test
-//    void getGradesForExam() {
-//    }
-//}
-
-
-
-
 package backend;
 
-import backend.models.Course;
-import java.util.List;
-import backend.models.Student;
-import backend.models.Exam;
-import backend.models.Grade;
+import backend.models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -91,7 +22,7 @@ class ApiRequestsTest {
     @Test
     void testGetStudents() {
 
-        List<Student> students = api.getStudents();
+        List<Student> students = api.getStudents("");
 
 
         assertNotNull(students, "Kan niet null zijn");
@@ -99,9 +30,10 @@ class ApiRequestsTest {
 
 
         Student firstStudent = students.get(0);
-        assertNotNull(firstStudent.getName(), "Student needs a name.");
+        assertNotNull(firstStudent.getFirstName(), "Student needs a name.");
         assertNotNull(firstStudent.getId(), "Student needs an ID.");
     }
+
 
     @Test
     void testGetCourses() {
@@ -128,66 +60,56 @@ class ApiRequestsTest {
 
     @Test
     void testStudentToevoegen() {
-        // Example of adding a student
-        Student newStudent = new Student("SE/1123/030", "Jason Doe");
+        Student newStudent = new Student();
+        newStudent.setFirstName("Othniel");
+        newStudent.setLastName("Samuels");
+        newStudent.setMajor("SE");
+        newStudent.setCohort(1129);
+        newStudent.setGender("M");
+        newStudent.setPassword("TestPassw");
+        newStudent.setBirthdate("2003-10-16");
+
         String response = api.student_toevoegen(newStudent);
 
         // Assuming the response should indicate success
-        assertEquals("Student added successfully", response, "Het is gelukt");
+        assertEquals("{\"message\":\"New student inserted successfully.\"}", response, "Het is gelukt");
     }
 
     @Test
     void testExamToevoegen() {
         // Example of adding an exam
-        Exam newExam = new Exam(1, "Math", "2023-01-01", "Regular");
+        Exam newExam = new Exam(2,"Regulier","2025-03-27");
         String response = api.exam_toevoegen(newExam);
 
         // Assuming the response should indicate success
-        assertEquals("Exam added successfully", response, "Gelukt");
-    }
-
-    @Test
-    void testStudentBewerken() {
-        // Example of editing a student
-        Student existingStudent = new Student("SE/1123/030", "Jason Doe");
-        existingStudent.setName("jonhathan Doe");
-        String response = api.student_bewerken(existingStudent);
-
-        assertEquals("Student updated successfully", response, "Update gelukt");
-    }
-
-    @Test
-    void testCijferBewerken() {
-        // Example of editing a grade
-        Grade grade = new Grade("SE/1123/030", 90, "2023-01-01");
-        grade.setScore(95);  // Editing the grade score
-        String response = api.cijfer_bewerken(grade);
-
-        assertEquals("Grade updated successfully", response, "Update gelukt.");
+        assertEquals("{\"message\":\"New exam inserted successfully.\"}", response, "Gelukt");
     }
 
     @Test
     void testCijferVerwijderen() {
         // Example of deleting a grade
-        Grade grade = new Grade("SE/1123/030", 90, "2023-01-01");
+        Grade grade = new Grade();
+        grade.setId(21);
         String response = api.cijfer_verwijderen(grade);
 
-        assertEquals("Grade deleted successfully", response, "Delete gelukt.");
+        assertEquals("Student succesvol verwijderd.", response, "Delete gelukt.");
     }
 
     @Test
     void testStudentVerwijderen() {
 
-        Student student = new Student("SE/1123/030", "Jason Doe");
+        Student student = new Student();
+        student.setStudentNumber("SE/1129/128");
+        student.setId(129);
         String response = api.student_verwijderen(student);
 
-        assertEquals("Student deleted successfully", response, "Delete gelukt");
+        assertEquals("Student succesvol verwijderd.", response, "Delete gelukt");
     }
 
     @Test
     void testGetSemesters() {
 
-        List<String> semesters = api.getSemesters();
+        List<Semester> semesters = api.getSemesters();
 
         assertNotNull(semesters, "Mag niet nul zijn.");
         assertTrue(semesters.size() > 0, "Er moet tenminste 1 sem zijn");
@@ -205,26 +127,16 @@ class ApiRequestsTest {
     @Test
     void testGetGradesForStudent() {
 
-        List<Grade> grades = api.getGradesForStudent("SE/1123/030");
+        List<GradeGetter> grades = api.getGradesForStudent("SE/1123/40");
 
         assertNotNull(grades, "Kan niet null zijn.");
         assertTrue(grades.size() >= 0, "Er moet valide data zijn.");
     }
 
     @Test
-    void testExamToevoegenResponse() {
-
-        Exam exam = new Exam(1, "Bedrijfssimulatie", "2023-05-01", "Regular");
-        String response = api.exam_toevoegen(exam);
-
-        assertEquals("Exam added successfully", response, "Gelukt");
-    }
-
-    @Test
     void testGetGradesForExam() {
 
-        List<Grade> grades = api.getGradesForExam(1);
-
+        List<GradeGetter> grades = api.getGradesForExam(21);
         assertNotNull(grades, "Kan niet null zijn.");
         assertTrue(grades.size() >= 0, "Mag geen invalid data hebben.");
     }

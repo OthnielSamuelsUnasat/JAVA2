@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class api_requests implements  api_interface{
+public class api_requests implements api_interface{
 
     public  List<Student> students = new ArrayList<>();
     private  String apiUrl = "https://trajectplannerapi.dulamari.com/";
@@ -115,7 +115,6 @@ public class api_requests implements  api_interface{
             System.out.println("Response Body: " + response.body());
 
             if (response.statusCode() == 201 || response.statusCode() == 200) {
-
                 return response.body();
             } else {
                 return ("Fout bij opslaan: " + response.statusCode() +  response.body());
