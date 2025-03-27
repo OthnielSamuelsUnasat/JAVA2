@@ -7,7 +7,7 @@ public class Semester {
     private String semester_name;
     private List<Course> courses;
 
-    // Constructor
+    // Constructr
     public Semester(int id, String semesterName, List<Course> courses) {
         this.id = id;
         this.semester_name = semesterName;

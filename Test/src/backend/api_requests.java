@@ -28,15 +28,15 @@ public class api_requests implements api_interface{
         try {
             HttpClient client = HttpClient.newHttpClient();
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "students"))
                     .build();
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Parse the JSON response into a list of students
+
             Gson gson = new Gson();
             Student[] students = gson.fromJson(response.body(), Student[].class);
 
@@ -52,19 +52,19 @@ public class api_requests implements api_interface{
         try {
             HttpClient client = HttpClient.newHttpClient();
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "courses"))
                     .build();
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Parse the JSON response into a list of courses
+
             Gson gson = new Gson();
             Course[] courses = gson.fromJson(response.body(), Course[].class);
 
-            return List.of(courses); // Convert the array to a list
+            return List.of(courses);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -135,22 +135,22 @@ public class api_requests implements api_interface{
             Gson gson = new Gson();
             String jsonInputString = gson.toJson(exam);
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "exams"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
                     .build();
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Log response details
+
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response Body: " + response.body());
 
             if (response.statusCode() == 201 || response.statusCode() == 200) {
-                // Parse the JSON response into a Student object
+
                 return response.body();
             } else {
                 return ("Fout bij opslaan: " + response.statusCode() +  response.body());
@@ -173,17 +173,17 @@ public class api_requests implements api_interface{
             String jsonInputString = gson.toJson(student);
 
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "students")) // Append student ID to URL
                     .header("Content-Type", "application/json")
                     .PUT(HttpRequest.BodyPublishers.ofString(jsonInputString))
                     .build();
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Log response details
+
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response Body: " + response.body());
 
@@ -213,7 +213,7 @@ public class api_requests implements api_interface{
 
             String jsonInputString = gson.toJson(grade);
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "scores/")) // Include ID in the URL
                     .header("Content-Type", "application/json")
@@ -221,10 +221,10 @@ public class api_requests implements api_interface{
                     .build();
 
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Log response details
+
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response Body: " + response.body());
 
@@ -249,21 +249,21 @@ public class api_requests implements api_interface{
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
 
-            // Convert the student object to JSON string using Gson
-            String jsonInputString = gson.toJson(grade);
-            System.out.println("JSON Body: " + jsonInputString); // Debugging: Check JSON output
 
-            // Construct the URI for the "DELETE" action (verify with your API endpoint)
+            String jsonInputString = gson.toJson(grade);
+            System.out.println("JSON Body: " + jsonInputString);
+
+
             URI uri = URI.create(apiUrl + "scores");
 
-            // Manually send the request using HttpURLConnection since Java HttpRequest API does not support bodies in DELETE directly
+
             HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("DELETE");
-            connection.setDoOutput(true); // Enable sending body
+            connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8)); // Send the JSON body
+            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8));
 
-            // Get the response code and handle it
+
             int responseCode = connection.getResponseCode();
             String responseMessage = connection.getResponseMessage();
 
@@ -286,21 +286,21 @@ public class api_requests implements api_interface{
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();
 
-            // Convert the student object to JSON string using Gson
-            String jsonInputString = gson.toJson(student);
-            System.out.println("JSON Body: " + jsonInputString); // Debugging: Check JSON output
 
-            // Construct the URI for the "DELETE" action (verify with your API endpoint)
+            String jsonInputString = gson.toJson(student);
+            System.out.println("JSON Body: " + jsonInputString);
+
+
             URI uri = URI.create(apiUrl + "students");
 
-            // Manually send the request using HttpURLConnection since Java HttpRequest API does not support bodies in DELETE directly
+
             HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("DELETE");
-            connection.setDoOutput(true); // Enable sending body
+            connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8)); // Send the JSON body
+            connection.getOutputStream().write(jsonInputString.getBytes(StandardCharsets.UTF_8));
 
-            // Get the response code and handle it
+
             int responseCode = connection.getResponseCode();
             String responseMessage = connection.getResponseMessage();
 
@@ -380,7 +380,7 @@ public class api_requests implements api_interface{
 
             if (response.statusCode() == 200) {
                 Gson gson = new Gson();
-                // Parse the entire response into a list of GradeGetter objects
+
                 GradeGetter[] allGrades = gson.fromJson(response.body(), GradeGetter[].class);
 
                 return List.of(allGrades);
@@ -402,26 +402,26 @@ public class api_requests implements api_interface{
             String jsonInputString = gson.toJson(grade);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String formattedDate = "'" + sdf.format(new Date()) + "'";  // Add quotes around the formatted date
-            grade.setScore_datetime(formattedDate);  // Now this will be sent as a string with quotes
+            String formattedDate = "'" + sdf.format(new Date()) + "'";
+            grade.setScore_datetime(formattedDate);
 
 
-            // Create the HTTP request
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "scores"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
                     .build();
 
-            // Send the request and get the response
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Log response details
+
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response Body: " + response.body());
 
             if (response.statusCode() == 201 || response.statusCode() == 200) {
-                // Parse the JSON response into a Student object
+
                 return response.body();
             } else {
                 return ("Fout bij opslaan: " + response.statusCode() +  response.body());
@@ -447,11 +447,11 @@ public class api_requests implements api_interface{
                 Gson gson = new Gson();
                 GradeGetter[] grades = gson.fromJson(response.body(), GradeGetter[].class);
 
-                // Convert score_datetime string to Date if needed
+
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-                // Convert the array to a list and filter by exam_id
+
                 List<GradeGetter> filteredGrades = new ArrayList<>(Arrays.asList(grades));
                 filteredGrades = filteredGrades.stream()
                         .filter(grade -> grade.getExam_id() == exam_id)
@@ -515,7 +515,7 @@ public class api_requests implements api_interface{
         }
 
         private void handlePutRequest(HttpExchange exchange) throws IOException {
-            // Implementation for handling PUT request to update an existing student
+
             InputStream is = exchange.getRequestBody();
             String body = new String(is.readAllBytes());
             Gson gson = new Gson();
@@ -531,7 +531,7 @@ public class api_requests implements api_interface{
         }
 
         private void handleDeleteRequest(HttpExchange exchange) throws IOException {
-            // Implementation for handling DELETE request to remove a student
+
             String query = exchange.getRequestURI().getQuery();
             int id = Integer.parseInt(query.split("=")[1]);
 

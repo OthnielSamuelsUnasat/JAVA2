@@ -119,7 +119,7 @@ public class Grade {
         this.score_datetime = score_datetime;
     }
 
-    // Optional: Override toString() for easy printing
+
     @Override
     public String toString() {
         return "Grade{" +

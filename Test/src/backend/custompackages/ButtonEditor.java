@@ -147,7 +147,7 @@ private void editRow(int row) {
             // Call API to delete student by sending the whole student object
             String response = api_requests.student_verwijderen(studentToDelete);
 
-            // Optionally, you can show a message depending on the API response
+
             JOptionPane.showMessageDialog(null, response);
         }
     }

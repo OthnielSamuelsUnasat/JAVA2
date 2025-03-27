@@ -39,7 +39,7 @@ public class GradeGetter {
             }
         }
     }
-    // Constructor
+    // Costructor
     public GradeGetter(int id,int semester ,int student_id, String student_number, int exam_id, String course_name, double score_value, Date score_datetime) {
         this.id = id;
         this.student_id = student_id;
@@ -128,7 +128,7 @@ public class GradeGetter {
         this.score_datetime = score_datetime;
     }
 
-    // Optional: Override toString() for easy printing
+
     @Override
     public String toString() {
         return "Grade{" +

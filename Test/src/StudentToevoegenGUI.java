@@ -12,7 +12,7 @@ public class StudentToevoegenGUI {
         JDialog dialog = new JDialog((Frame) null, "Voeg Student Toe", true);
         dialog.setSize(400, 750);
         dialog.setLayout(new GridBagLayout());
-       // dialog.getContentPane().setBackground(Color.WHITE);
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -30,7 +30,7 @@ public class StudentToevoegenGUI {
         JLabel MajorLabel = new JLabel("Richting:");
         String[] richtingen = {"SE", "SNE", "BI"};
         JComboBox<String> richtingenBox = new JComboBox<>(richtingen);
-        //JTextField MajorField = new JTextField(20);
+
 
         JLabel CohortLabel = new JLabel("Cohort:");
         JTextField Cohort = new JTextField(20);

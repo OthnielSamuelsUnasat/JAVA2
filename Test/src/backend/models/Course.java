@@ -11,13 +11,13 @@ public class Course {
     private String course_description;
     private int block;
 
-    // Updated constructor based on the new data structure
+
     public Course() {}
 
     public Course(int id, String course_name, String name, String code, String semester_name, int ec, String courseCode, String courseDescription, int block) {
         this.id = id;
-        this.course_name = course_name;  // Correct mapping for course_name
-        this.name = name;                // Correct mapping for name
+        this.course_name = course_name;
+        this.name = name;
         this.code = code;
         this.semester_name = semester_name;
         this.ec = ec;
@@ -35,19 +35,19 @@ public class Course {
     }
 
     public String getCourseName() {
-        return course_name;  // Correct getter for course_name
+        return course_name;
     }
 
     public void setCourseName(String course_name) {
-        this.course_name = course_name;  // Correct setter for course_name
+        this.course_name = course_name;
     }
 
     public String getName() {
-        return name;  // Correct getter for name
+        return name;
     }
 
     public void setName(String name) {
-        this.name = name;  // Correct setter for name
+        this.name = name;
     }
 
     public String getCode() {

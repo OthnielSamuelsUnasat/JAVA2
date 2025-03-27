@@ -94,7 +94,7 @@ public class StudentManagementGUI{
         table.setIntercellSpacing(new Dimension(1, 1));
 
 
-// Center text in table cells
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < table.getColumnCount(); i++) {
@@ -158,7 +158,7 @@ public class StudentManagementGUI{
         btn_student_toevoegen.addActionListener(e -> {
             StudentToevoegenGUI.openStudentForm();
 
-            // Closen
+
             SwingUtilities.invokeLater(() -> fetchStudentData("", table));
         });
 
@@ -233,7 +233,7 @@ public class StudentManagementGUI{
             panel.setBackground(new Color(230, 174, 135));
             panel.add(scrollPane, BorderLayout.CENTER);
 
-            // Add a title label
+
             JLabel titleLabel = new JLabel("Instructies", SwingConstants.CENTER);
             titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
             titleLabel.setForeground(new Color(0, 28, 111));
@@ -311,7 +311,7 @@ public class StudentManagementGUI{
     }
 
 
-// Custom Renderer to display buttons in the "Actions" column
+
 
      class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer(String text, Color backgroundColor, Color foregroundColor) {
@@ -346,7 +346,7 @@ public class StudentManagementGUI{
 
         java.util.List<GradeGetter> grades = api_requests.getGradesForStudent(studentId);
 
-        // Check if grades are fetched
+
         if (grades != null) {
 
             updateGradesTable(grades);
@@ -376,10 +376,10 @@ public class StudentManagementGUI{
         }
         columnNames[colIndex] = "Average";
 
-        // Create table model
+
         DefaultTableModel gradesTableModel = new DefaultTableModel(columnNames, 0);
 
-        // Add course grades and averages
+
         for (Map.Entry<String, Map<Integer, Double>> entry : courseGradesMap.entrySet()) {
             String courseName = entry.getKey();
             Map<Integer, Double> semesterGrades = entry.getValue();
@@ -406,17 +406,17 @@ public class StudentManagementGUI{
             gradesTableModel.addRow(rowData);
         }
 
-        // Create JTable and add properties
+
         JTable gradesTable = new JTable(gradesTableModel);
         gradesTable.setRowHeight(30);
         gradesTable.setShowGrid(true);
         gradesTable.setGridColor(Color.LIGHT_GRAY);
         gradesTable.setIntercellSpacing(new Dimension(1, 1));
 
-        // Create JScrollPane to display the grades table
+
         JScrollPane scrollPane = new JScrollPane(gradesTable);
 
-        // Create frame to show the grades table
+
         JFrame gradesFrame = new JFrame("Grades for Student");
         gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         gradesFrame.setSize(800, 400);

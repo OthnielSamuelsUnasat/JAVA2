@@ -21,14 +21,14 @@ import java.util.List;
 public class ExamManagementGUI {
     api_requests api_requests = new api_requests();
 
-    // Method to display the exams and the "View Exam Details" button in a JFrame
+
     public void displayExams(JFrame frame) {
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Course ID", "Course Name", "Semester", "Type", "Date", "Actions"});
 
         JTable table = new JTable(model) {
-            // Override the method to make the "Actions" column render buttons
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 if (columnIndex == 5) {
@@ -37,7 +37,7 @@ public class ExamManagementGUI {
                 return super.getColumnClass(columnIndex);
             }
         };
-// Kleuren laten varieren
+
         table.setDefaultRenderer(Object.class, new TableCellRenderer() {
             private final DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();
 
@@ -55,15 +55,15 @@ public class ExamManagementGUI {
         JScrollPane scrollPane = new JScrollPane(table);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // Fetch data and populate the table
+
         fetchExamData(table);
 
-        // Set frame size and center it
+
         frame.setSize(800, 400);
-        frame.setLocationRelativeTo(null);  // Center the frame on the screen
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        // Setting up the button rendering
+
         table.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
         table.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JCheckBox()));
 
@@ -77,7 +77,7 @@ public class ExamManagementGUI {
         addExamButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<Course> courses = api_requests.getCoursesNotInExams(); // Fetch courses from API
+                List<Course> courses = api_requests.getCoursesNotInExams();
                 if (courses == null) {
                     JOptionPane.showMessageDialog(frame, "Failed to load courses.");
                     return;
@@ -117,10 +117,10 @@ public class ExamManagementGUI {
                             return;
                         }
 
-                        // Create the Exam object based on the user inputs
+
                         Exam newExam = new Exam(courseId, examType, examDateStr);
 
-                        // Send the new exam data to the API
+
                         String success = api_requests.exam_toevoegen(newExam);
 
                         if (success != null && success.contains("New exam inserted successfully")) {
@@ -140,14 +140,14 @@ public class ExamManagementGUI {
 
 
 
-// Add the button at the top of the frame
+
         JPanel topPanel = new JPanel();
         topPanel.add(addExamButton);
         frame.add(topPanel, BorderLayout.NORTH);
 
     }
 
-    // Fetch and populate exam data
+
     private  void fetchExamData(JTable table) {
         List<Exam> exams = api_requests.getExams();
 
@@ -156,7 +156,7 @@ public class ExamManagementGUI {
             model.setRowCount(0); // Clear existing rows
 
             for (Exam exam : exams) {
-                // Add the exam details and a "View Exam Details" button for each exam
+
                 model.addRow(new Object[]{
                         exam.getcourse_id(),
                         exam.getcourse_name(),
@@ -174,46 +174,44 @@ public class ExamManagementGUI {
     }
 
     private  void viewExamGrades(int examId) {
-        // Fetch the grades for the selected exam
+
 
 
         List<GradeGetter> grades = api_requests.getGradesForExam(examId);
 
-// Check if grades is null and initialize it if necessary
+
         if (grades == null) {
             grades = new ArrayList<>();
         }
 
-//        List<Grade> grades = api_requests.getGradesForExam(examId); // Assuming the API returns a list of grades for the exam
 
 
-            // Create a new JFrame to display grades
             JFrame gradesFrame = new JFrame("Grades for Exam ID: " + examId);
             gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            // Create a JPanel to hold everything
+
             JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout());
 
-            // Column names for the JTable
+
             String[] columnNames = {"Student Number", "Course", "Score", "Date"};
 
-            // Prepare data for the JTable
-        String[][] data = new String[grades.isEmpty() ? 1 : grades.size()][4]; // If no grades, show one empty row
+
+        String[][] data = new String[grades.isEmpty() ? 1 : grades.size()][4];
         if (grades.isEmpty()) {
-            data[0] = new String[]{"", "", "", ""}; // Placeholder empty row if no grades
+            data[0] = new String[]{"", "", "", ""};
         } else {
             for (int i = 0; i < grades.size(); i++) {
                 GradeGetter grade = grades.get(i);
                 data[i][0] = grade.getStudent_number();
                 data[i][1] = grade.getCourse_name();
                 data[i][2] = String.valueOf(grade.getScore_value());
-                data[i][3] = grade.getScore_datetime().toString(); // Assuming you want to display the full Date object
+                data[i][3] = grade.getScore_datetime().toString();
             }
         }
 
 
-        // Create the JTable for grades and alternate the colors again.
+
             DefaultTableModel model = new DefaultTableModel(data, columnNames);
 
         JTable gradesTable = new JTable(model) {
@@ -231,11 +229,11 @@ public class ExamManagementGUI {
         JScrollPane scrollPane = new JScrollPane(gradesTable);
             panel.add(scrollPane, BorderLayout.CENTER);
 
-            // Create a JPanel for buttons
+
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
 
-            // Create the Update Grade Button
+
         JButton updateGradeButton = new JButton("Update Grade");
         List<Grade> finalGrades = convertToGradeList(grades);
 
@@ -258,7 +256,7 @@ public class ExamManagementGUI {
 
                             Grade gradeToUpdate = finalGrades.get(selectedRow);
 
-                            // Ensure the ID is set
+
                             if (gradeToUpdate.getId() == 0) {
                                 JOptionPane.showMessageDialog(gradesFrame, "Error: Grade ID is missing!", "Error", JOptionPane.ERROR_MESSAGE);
                                 return;
@@ -286,7 +284,7 @@ public class ExamManagementGUI {
             }
         });
 
-        // Delete function
+
 
 
         JButton deleteGradeButton = new JButton("Delete Grade");
@@ -325,7 +323,7 @@ public class ExamManagementGUI {
 
 
 
-        // buttons
+
             JButton addGradeButton = new JButton("Add Grade");
 
             addGradeButton.setForeground(Color.WHITE);
@@ -362,7 +360,7 @@ public class ExamManagementGUI {
 //                    }
 //                }
 //            });
-// Inside the Add Grade action listener
+
         addGradeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,32 +369,32 @@ public class ExamManagementGUI {
 
                 if (studentNumber != null && scoreStr != null) {
                     try {
-                        double score = Double.parseDouble(scoreStr); // Convert score input to double
+                        double score = Double.parseDouble(scoreStr);
 
                         Grade newGrade = new Grade();
                         newGrade.setStudent_number(studentNumber);
-                        newGrade.setExam_id(examId); // Use the exam ID from the method parameter
+                        newGrade.setExam_id(examId);
                         newGrade.setScore_value(score);
 
-                        // Get current date as a String for the new grade
+
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         String scoreDateString = sdf.format(new Date());
-                        newGrade.setScore_datetime(scoreDateString); // Set the date as String
+                        newGrade.setScore_datetime(scoreDateString);
 
-                        // Send new grade to API
+
                         String response = api_requests.exam_toevoegen(newGrade);
                         JOptionPane.showMessageDialog(gradesFrame, response);
 
                         if (response.startsWith("Fout")) {
                             System.err.println(response);
                         } else {
-                            // Convert String to Date when adding to GradeGetter list
+
                             GradeGetter gradeGetter = new GradeGetter();
                             gradeGetter.setStudent_number(studentNumber);
                             gradeGetter.setCourse_name(gradeGetter.getCourse_name());
                             gradeGetter.setScore_value(score);
-                            gradeGetter.setScore_datetime(sdf.parse(scoreDateString)); // Convert String to Date
-                            finalGrades1.add(gradeGetter); // Add to GradeGetter list
+                            gradeGetter.setScore_datetime(sdf.parse(scoreDateString));
+                            finalGrades1.add(gradeGetter);
 
                             Object[] newRow = {studentNumber, examId, score, scoreDateString};
                             model.addRow(newRow);
@@ -412,7 +410,7 @@ public class ExamManagementGUI {
 
 
 
-            // Add buttons to the button panel
+
             buttonPanel.add(updateGradeButton);
 
             buttonPanel.add(deleteGradeButton);
@@ -420,17 +418,17 @@ public class ExamManagementGUI {
 
             panel.add(buttonPanel, BorderLayout.SOUTH);
 
-            // Add the panel to the JFrame
+
             gradesFrame.add(panel);
 
-            // Set up the frame size and visibility
+
             gradesFrame.setSize(600, 400);
-            gradesFrame.setLocationRelativeTo(null);  // This will center the frame on the screen
+            gradesFrame.setLocationRelativeTo(null);
             gradesFrame.setVisible(true);
     }
 
 
-    // Custom Renderer to display buttons in the "Actions" column
+
      class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setText("Cijfers");
@@ -445,7 +443,7 @@ public class ExamManagementGUI {
         }
     }
 
-    // Custom Editor to handle button clicks in the "Actions" column
+
      class ButtonEditor extends DefaultCellEditor {
         protected JButton button;
         private int examId;
@@ -457,7 +455,7 @@ public class ExamManagementGUI {
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Get the table from the event's source
+
                     JTable table = (JTable) SwingUtilities.getAncestorOfClass(JTable.class, button);
                     int row = table.getSelectedRow();
                     examId = (int) table.getValueAt(row, 0); // Get exam ID
@@ -489,7 +487,7 @@ public class ExamManagementGUI {
                     getter.getExam_id(),
                     getter.getCourse_name(),
                     getter.getScore_value(),
-                    getter.getScore_datetime().toString() // Convert Date to String
+                    getter.getScore_datetime().toString()
             ));
         }
         return grades;
