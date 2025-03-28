@@ -6,6 +6,9 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class api_requests implements api_interface{
@@ -69,6 +73,10 @@ public class api_requests implements api_interface{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public  String getGroepsleden() {
+        return  "SE/1123/080... - Othniel Samuels\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
     }
 
     public  List<Course> getCoursesNotInExams() {
@@ -281,6 +289,82 @@ public class api_requests implements api_interface{
     }
 
 
+    @Override
+    public void clearFields(JTextField... fields) {
+        for (JTextField field : fields) {
+            field.setText("");
+        }
+    }
+
+    public void CalculateAverage(java.util.List<GradeGetter> grades) {
+
+        Map<String, Map<Integer, Double>> courseGradesMap = new LinkedHashMap<>(); // Course -> (Semester -> Grade)
+        Set<Integer> semesters = new TreeSet<>(); // Keep semesters in sorted order
+
+        for (GradeGetter grade : grades) {
+            courseGradesMap
+                    .computeIfAbsent(grade.getCourse_name(), k -> new HashMap<>())
+                    .put(grade.getSemester(), grade.getScore_value());
+            semesters.add(grade.getSemester());
+        }
+
+
+        String[] columnNames = new String[semesters.size() + 2];
+        columnNames[0] = "Course";
+        int colIndex = 1;
+        for (Integer semester : semesters) {
+            columnNames[colIndex++] = "Semester " + semester;
+        }
+        columnNames[colIndex] = "Average";
+
+
+        DefaultTableModel gradesTableModel = new DefaultTableModel(columnNames, 0);
+
+
+        for (Map.Entry<String, Map<Integer, Double>> entry : courseGradesMap.entrySet()) {
+            String courseName = entry.getKey();
+            Map<Integer, Double> semesterGrades = entry.getValue();
+
+            double total = 0;
+            int count = 0;
+
+            Object[] rowData = new Object[columnNames.length];
+            rowData[0] = courseName;
+
+            colIndex = 1;
+            for (Integer semester : semesters) {
+                Double grade = semesterGrades.get(semester);
+                rowData[colIndex++] = (grade != null) ? grade : null;
+                if (grade != null) {
+                    total += grade;
+                    count++;
+                }
+            }
+
+            double average = count > 0 ? total / count : 0;
+            rowData[colIndex] = average;
+
+            gradesTableModel.addRow(rowData);
+        }
+
+
+        JTable gradesTable = new JTable(gradesTableModel);
+        gradesTable.setRowHeight(30);
+        gradesTable.setShowGrid(true);
+        gradesTable.setGridColor(Color.LIGHT_GRAY);
+        gradesTable.setIntercellSpacing(new Dimension(1, 1));
+
+
+        JScrollPane scrollPane = new JScrollPane(gradesTable);
+
+
+        JFrame gradesFrame = new JFrame("Grades for Student");
+        gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        gradesFrame.setSize(800, 400);
+        gradesFrame.add(scrollPane, BorderLayout.CENTER);
+        gradesFrame.setVisible(true);
+    }
+
     public  String student_verwijderen(Student student) {
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -395,7 +479,7 @@ public class api_requests implements api_interface{
     }
 
 
-    public  String exam_toevoegen(Grade grade) {
+    public  String cijfer_toevoegen(Grade grade) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             Gson gson = new Gson();

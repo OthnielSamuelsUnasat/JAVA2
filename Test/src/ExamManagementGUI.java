@@ -13,8 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 
@@ -23,6 +22,8 @@ public class ExamManagementGUI {
 
 
     public void displayExams(JFrame frame) {
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{},
                 new String[]{"Course ID", "Course Name", "Semester", "Type", "Date", "Actions"});
@@ -148,6 +149,7 @@ public class ExamManagementGUI {
     }
 
 
+
     private  void fetchExamData(JTable table) {
         List<Exam> exams = api_requests.getExams();
 
@@ -187,10 +189,14 @@ public class ExamManagementGUI {
 
 
             JFrame gradesFrame = new JFrame("Grades for Exam ID: " + examId);
-            gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        gradesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gradesFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        gradesFrame.setLayout(new BorderLayout());
 
 
-            JPanel panel = new JPanel();
+
+
+        JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout());
 
 
@@ -361,6 +367,7 @@ public class ExamManagementGUI {
 //                }
 //            });
 
+
         addGradeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -382,7 +389,7 @@ public class ExamManagementGUI {
                         newGrade.setScore_datetime(scoreDateString);
 
 
-                        String response = api_requests.exam_toevoegen(newGrade);
+                        String response = api_requests.cijfer_toevoegen(newGrade);
                         JOptionPane.showMessageDialog(gradesFrame, response);
 
                         if (response.startsWith("Fout")) {

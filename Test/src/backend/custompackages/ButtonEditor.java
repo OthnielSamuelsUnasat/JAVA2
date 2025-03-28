@@ -88,11 +88,7 @@ private void editRow(int row) {
         );
 
         if (result == 2) {  // If "Clear" is clicked
-            firstNameField.setText("");
-            lastNameField.setText("");
-            studentNumberField.setText("");
-            genderField.setText("");
-            birthdateField.setText("");
+            api_requests.clearFields(firstNameField, lastNameField, studentNumberField, genderField, birthdateField);
         }
 
     } while (result == 2);  // Keep dialog open if "Clear" is clicked
@@ -132,7 +128,6 @@ private void editRow(int row) {
             String gender = model.getValueAt(row, 4).toString();
             String birthdate = model.getValueAt(row, 5).toString();
 
-            // Create a Student object with the fetched data
             Student studentToDelete = new Student();
             studentToDelete.setId(studentID); // Set the student ID
             studentToDelete.setFirstName(firstName);
@@ -141,10 +136,8 @@ private void editRow(int row) {
             studentToDelete.setGender(gender);
             studentToDelete.setBirthdate(birthdate);
 
-            // Remove the row from the table
             model.removeRow(row);
 
-            // Call API to delete student by sending the whole student object
             String response = api_requests.student_verwijderen(studentToDelete);
 
 

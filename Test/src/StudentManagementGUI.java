@@ -9,7 +9,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.util.*;
 
 public class StudentManagementGUI{
 
@@ -146,7 +145,7 @@ public class StudentManagementGUI{
         groepsleden.setWrapStyleWord(true);
         JScrollPane groepPane = new JScrollPane(groepsleden);
 
-        groepsleden.setText(getGroepsleden());
+        groepsleden.setText(api_requests.getGroepsleden());
 
 
         JFrame frame_student_toevoegen = new JFrame("Student Toevoegen");
@@ -206,12 +205,7 @@ public class StudentManagementGUI{
             instructionsArea.setEditable(false);
 
 
-            instructionsArea.setText("Welkom.\n" +
-                    "- U kunt drukken op 'Student toevoegen' om een student bij te voegen. U kunt daarna de informatie bezichtigen op de homepagina. Daar zult u een verwijderknop zien, indien u een student wenst te verwijderen. Als u een verandering moet plegen bij een student, kunt u drukken op 'Bewerken'.\n" +
-                    "- U kunt de semesters bekijken en de informatie daar toevoegen of bewerken.\n" +
-                    "- U kunt de exameninformatie bekijken door op het knopje te drukken. Daar kunt u ook de informatie wijzigen, toevoegen of verwijderen.\n" +
-                    "- U kunt bij examen per examen de cijfers doorgeven van de studenten.\n" +
-                    "- Wij hopen u voldoende geïnformeerd te hebben met deze uitleg.");
+            instructionsArea.setText(getInstructies());
 
 
             instructionsArea.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -349,86 +343,22 @@ public class StudentManagementGUI{
 
         if (grades != null) {
 
-            updateGradesTable(grades);
+            api_requests.CalculateAverage(grades);
         } else {
             JOptionPane.showMessageDialog(null, "Error fetching grades");
         }
     }
 
-    private  void updateGradesTable(java.util.List<GradeGetter> grades) {
 
-        Map<String, Map<Integer, Double>> courseGradesMap = new LinkedHashMap<>(); // Course -> (Semester -> Grade)
-        Set<Integer> semesters = new TreeSet<>(); // Keep semesters in sorted order
-
-        for (GradeGetter grade : grades) {
-            courseGradesMap
-                    .computeIfAbsent(grade.getCourse_name(), k -> new HashMap<>())
-                    .put(grade.getSemester(), grade.getScore_value());
-            semesters.add(grade.getSemester());
-        }
+private String getInstructies(){
+        return "Welkom.\n" +
+                "- U kunt drukken op 'Student toevoegen' om een student bij te voegen. U kunt daarna de informatie bezichtigen op de homepagina. Daar zult u een verwijderknop zien, indien u een student wenst te verwijderen. Als u een verandering moet plegen bij een student, kunt u drukken op 'Bewerken'.\n" +
+                "- U kunt de semesters bekijken en de informatie daar toevoegen of bewerken.\n" +
+                "- U kunt de exameninformatie bekijken door op het knopje te drukken. Daar kunt u ook de informatie wijzigen, toevoegen of verwijderen.\n" +
+                "- U kunt bij examen per examen de cijfers doorgeven van de studenten.\n" +
+                "- Wij hopen u voldoende geïnformeerd te hebben met deze uitleg.";
+}
 
 
-        String[] columnNames = new String[semesters.size() + 2]; // Course + Semesters + Average
-        columnNames[0] = "Course";
-        int colIndex = 1;
-        for (Integer semester : semesters) {
-            columnNames[colIndex++] = "Semester " + semester;
-        }
-        columnNames[colIndex] = "Average";
-
-
-        DefaultTableModel gradesTableModel = new DefaultTableModel(columnNames, 0);
-
-
-        for (Map.Entry<String, Map<Integer, Double>> entry : courseGradesMap.entrySet()) {
-            String courseName = entry.getKey();
-            Map<Integer, Double> semesterGrades = entry.getValue();
-
-            double total = 0;
-            int count = 0;
-
-            Object[] rowData = new Object[columnNames.length];
-            rowData[0] = courseName;
-
-            colIndex = 1;
-            for (Integer semester : semesters) {
-                Double grade = semesterGrades.get(semester);
-                rowData[colIndex++] = (grade != null) ? grade : null;
-                if (grade != null) {
-                    total += grade;
-                    count++;
-                }
-            }
-
-            double average = count > 0 ? total / count : 0;
-            rowData[colIndex] = average;
-
-            gradesTableModel.addRow(rowData);
-        }
-
-
-        JTable gradesTable = new JTable(gradesTableModel);
-        gradesTable.setRowHeight(30);
-        gradesTable.setShowGrid(true);
-        gradesTable.setGridColor(Color.LIGHT_GRAY);
-        gradesTable.setIntercellSpacing(new Dimension(1, 1));
-
-
-        JScrollPane scrollPane = new JScrollPane(gradesTable);
-
-
-        JFrame gradesFrame = new JFrame("Grades for Student");
-        gradesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        gradesFrame.setSize(800, 400);
-        gradesFrame.add(scrollPane, BorderLayout.CENTER);
-        gradesFrame.setVisible(true);
-    }
-
-
-
-
-    private  String getGroepsleden() {
-       return  "SE/1123/080... - Othniel Samuels\nSE1123/039... - Eleanor Lokhai\nSE/1123/... - Bindya\nSE/1123/... - Dharandjai Patan";
-    }
 
 }
